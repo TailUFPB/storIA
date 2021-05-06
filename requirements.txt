@@ -1,0 +1,5 @@
+praw
+pandas 
+langdetect
+re
+
