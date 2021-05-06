@@ -1,2 +1,2 @@
 # storIA
-Generating short scary stories through language model.
+Generating short scary stories through language model. a
