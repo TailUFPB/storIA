@@ -1,0 +1,74 @@
+* {  /*o sinal de * significa que todos os elementos vão receber esse estilo de CSS*/
+    padding: 0;
+    margin:0;
+    box-sizing: border-box;
+}
+
+:root{ /*Definir as variaveis de cores*/
+    --white: #fff;
+    --background: #F2F3F5;
+    --gray-line: #DCDDE0;
+    --text: #655555;
+    --text-highlight: #B3B9FF;
+    --title: #2E384D;
+    --red: #E83F5B;
+    --green: #4CD62B;
+    --blue: #5965E0;
+    --blue-dark: #4953B8;
+    --blue-twitter: #2AA9E0;
+}
+
+body{
+    background: var(--background);
+    color: var(--text);
+}
+
+input, textarea, button{
+    font: 400 16px "Inter", sans-serif;
+}
+h1{
+    font: 400 83px, "Varela Round", sans-serif;
+    color: var(--background);
+}
+
+button{
+    cursor: pointer; /*altera o cursor ao mover sobre o botao*/
+}
+
+a{
+    color:inherit; /*Vai herdar aos links a cor do container dos links, para manter a mesma cor do texto*/
+    text-decoration: none;
+    
+}
+
+
+.centralize{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+.spanConfig{
+    margin-left: 0;
+}
+
+.txtAreaContainer{
+    width: 100%;
+    height: 100vh;
+    margin-top: 4rem;
+}
+
+
+
+.txtArea{
+
+    background: var(--white);
+    height: 65%;
+    -webkit-box-shadow: -4px 6px 34px 9px rgba(150,150,150,0.8); 
+    box-shadow: -4px 6px 34px 9px rgba(150,150,150,0.8);
+}
+
+.linkConfig{
+    border-bottom: 1px solid black;
+    color: #B3B9FF;
+}
