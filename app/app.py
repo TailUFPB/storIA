@@ -7,6 +7,19 @@ app = Flask(__name__, template_folder='templates')
 def hello():
     return render_template('index.html')
 
+@app.route("/submit", methods = ["POST", "GET"])
+def submit():
+
+    config = request.form
+    print('antes')
+
+    features = utils.preprocess(config)
+
+    print(features)
+
+    
+    return render_template('index.html', suggestion_text='texto sugerido.....')
+
 @app.route("/social")
 def social():
     return render_template('social.html')
