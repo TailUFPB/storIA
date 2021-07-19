@@ -65,7 +65,7 @@
 
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                     <div class="offcanvas-header">
-                        <h5 id="offcanvasRightLabel">Tutorial</h5>
+                          <h5 id="offcanvasRightLabel">Tutorial</h5>
                         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
@@ -107,8 +107,43 @@
           </div>
 
           <div class="form-floating centralize txtAreaInt">
-            <textarea class="form-control txtArea"style="height:auto!important" rows="50"placeholder="Type Here" id="floatingTextarea2"></textarea>
-            <label for="floatingTextarea2">Text</label>
+            <form action="/submit" method="POST" style="width: 100%;" >
+              <!-- Button trigger modal -->
+              <div class="row">
+                <div class="col">
+                  <span>
+                    Temperature:
+                  </span>  <br>
+                  <select class="form-control" name="temperature[]" id="temperature">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <span>
+                    Length: 
+                  </span> <br>
+                  <select class="form-control" name="length[]" id="length">
+                    <option>Small</option>
+                    <option>Medium</option>
+                    <option>Big</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    Completar
+                  </button>
+
+                </div>
+              </div>
+
+              <br><br>
+
+              <textarea name="text[]" class="form-control txtArea"style="height:auto!important" rows="50"placeholder="Type Here" id="text">{{suggestion_text}}</textarea>
+              <label for="floatingTextarea2">Text</label>
+            </form>
+            
           </div>
 
 
