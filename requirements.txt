@@ -2,4 +2,5 @@ praw
 pandas 
 langdetect
 re
-
+transformers
+datasets
