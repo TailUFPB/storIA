@@ -10,15 +10,20 @@ def hello():
 @app.route("/submit", methods = ["POST", "GET"])
 def submit():
 
-    config = request.form
-    print('antes')
+    data = request.form
 
-    features = utils.preprocess(config)
 
-    print(features)
+    print(data['text[]'])
+
+    story = utils.Story_generator()
+
+    example = story.generate_story(data['text[]'], int(data['length[]']), float(data['temperature[]']) )
+
+    print(example)
+    
 
     
-    return render_template('index.html', suggestion_text='texto sugerido.....')
+    return render_template('index.html', suggestion_text=example)
 
 @app.route("/social")
 def social():
