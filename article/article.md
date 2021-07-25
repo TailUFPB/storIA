@@ -82,3 +82,5 @@ _História 2:_
 Para obtermos gerações ainda melhores, testaremos modelos maiores da GPT2, bem como os novos modelos GPT-Neo. Além disso, buscaremos acrescentar mais dados à nossa base para que o modelo possua uma maior diversidade de histórias e adquira melhor conhecimento linguístico nesse campo específico de histórias de terror.
 
 Outra possibilidade já mapeada é acrescentar um narrador para as histórias, para que a experiência fique ainda mais imersiva e adicionar ao modelo a geração de uma imagem com base no local onde se passa a história gerada.
+
+Pretendemos também fazer uma segunda versão da interface para melhorar a experiência da geração do texto para o usuário, deixar mais chamativa e acrescentar elementos visuais para uma maior interação. E por fim, a criação de algum tipo de template para que o usuário, ao terminar o texto, possa fazer o download ou compartilhar em redes sociais.
