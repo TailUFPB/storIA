@@ -3,7 +3,7 @@ import pandas as pd
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from transformers import set_seed
 import random
-"""from re import sub"""
+from re import sub
 
 class Story_generator:
 
@@ -68,8 +68,8 @@ class Story_generator:
 
         story = self.tokenizer.decode(beam_outputs[0], skip_special_tokens=False)
 
-        """story = sub("<|startoftext|>", "", story)
-        story = sub("<|endoftext|>", "", story)"""
+        story = sub("<|startoftext|>", "", story)
+        story = sub("<|endoftext|>", "", story)
 
         return story
 
