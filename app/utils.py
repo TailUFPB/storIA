@@ -8,7 +8,7 @@ from re import sub
 class Story_generator:
 
     def __init__(self):
-        self.model_path = "model\checkpoint-53705"
+        self.model_path = "model_gpt2\checkpoint-53705"
 
         set_seed(random.randint(0, 999))
 
