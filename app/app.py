@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import utils
+from test import *
 
 app = Flask(__name__, template_folder='templates')
 
@@ -15,15 +16,19 @@ def submit():
 
     print(data['text[]'])
 
-    story = utils.Story_generator()
+    example = check_token(data['text[]'])
 
-    example = story.generate_story(data['text[]'], int(data['length[]']), float(data['temperature[]']) )
-
-    print(example)
+    input_len = len(example.split())
+    size = data['length[]']# DEFINIDO PELO USUÁRIO DEFAULT 50
+    
+    output = query({"inputs": example,
+                "parameters": {'repetition_penalty': float(1.2), 'num_beams':5,
+                               'no_repeat_ngram_size':3, 'max_length':input_len + int(size)}})
+    print(output[0].get('generated_text'))
     
 
     
-    return render_template('index.html', suggestion_text=example)
+    return render_template('index.html', suggestion_text=remove_token(output[0].get('generated_text')))
 
 @app.route("/social")
 def social():
