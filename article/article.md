@@ -66,13 +66,9 @@ O AI Dungeon é um jogo online gratuito baseado em uma aventura de textos, simul
 
 ## **CONCLUSÃO** <!-- Luiz -->
 
-<!-- NOTES
-1. escrever qual foi o tipo de persistencia escolhida - 1
-2. escrever sobre o deploy da aplicação (qual ferramenta?) - 2
--->
-Após a persistência do modelo para o disco <!--1-->, foi construído toda a interface, incluindo os templates e rotas de consumo. Para isso, foi utilizado o Flask, que é um microframework web escrito em Python, para a construção das rotas e HTML, CSS e Bootstrap -outro framework web de código aberto- para a construção dos templates renderizados pelas rotas do Flask.
+Após o treinamento do modelo, foi gerado todos os checkpoints para recriá-lo e construído toda a interface, incluindo os templates e rotas de consumo. Para isso, foi utilizado o Flask, que é um microframework web escrito em Python, para a construção das rotas e HTML, CSS e Bootstrap -outro framework web de código aberto- para a construção dos templates renderizados pelas rotas do Flask. Algo importante a se comentar é que, como os checkpoints do modelo são bem pesados, ou seja, ultrapassam os limites de tamanho de arquivo do git (100mb), foi necessário utilizar o Git LFS (Large File Storage) para fazer o upload do mesmo para o repositório. Este é uma extensão do Git que permite lidar com arquivos grandes e funciona da seguinte forma: ao invés de guardar o arquivo inteiro, é criado um arquivo de ponteiro que aponta para o arquivo real que na verdade está armazenado em outro canto. Dessa forma, ao clonar o repositório, o Github consegue mapear e chegar ao arquivo original através desse ponteiro, entregando o arquivo original.
 <!--2-->
-Após o desenvolvimento concluído da aplicação web, foi feito o deploy do mesmo, ou seja, a disponibilização do sistema em um ambiente no qual pode ser acessado e utilizado por qualquer pessoa. <!--Qual ferramenta?-->
+Ainda não foi feito o deploy do mesmo, ou seja, a disponibilização do sistema em um ambiente no qual pode ser acessado e utilizado por qualquer pessoa. Porém, é possível realizar testes localmente ainda. Para isso, o código foi disponibilizado no [repositório](https://github.com/TailUFPB/storIA) do github e executando o código app.py dentro da pasta app. Assim, irá abrir no servidor local na rota http://127.0.0.1:5000/ e será possível testar a vontade com diferentes frases e parâmetros.
 
 Para avaliação do modelo, utilizamos a perplexidade, que é uma métrica que avalia, de acordo com nossa fatia de dados separadas para validação, quão bem o modelo consegue predizer a próxima palavra de uma história. Ou seja, compara o texto gerado palavra a palavra pelo modelo com uma parte dos textos do dataset. A perplexidade atingiu o valor de  22.194 na etapa final do treinamento.
 
