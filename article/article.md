@@ -35,9 +35,7 @@ Muitos dos textos possuíam links, que retiramos, e cadeias de caracteres que fa
 Inserimos dentro dos textos os tokens de início de texto ```<|startoftext|>``` e de fim de texto ```<|endoftext|>```. Além disso, adicionamos a marcação de quebra de linha em HTML, o ```<br>```, como token para o nosso modelo.
 ### **4. Dividir o dataset em dois.**
 Separamos nossos dados tratados em duas váriaveis, o dataset de treinamento, que fica com 80% dos textos, e o dataset de teste, que fica com os outros 20%.
-### **5. Criar o tokenizer e o dividí-lo em batches.**  
-
-.
+### **5. Criar o tokenizer e o dividí-lo em batches.**
 
 Executadas as etapas supracitadas, prosseguimos com o treinamento do modelo. 
 
@@ -52,6 +50,19 @@ Nossa metodologia consistiu em utilizar o modelo pré-treinado distilgpt2, do hu
 O nosso modelo foi treinado por cinco épocas, com oito batches, levando aproximadamente 12 horas e 53.705 passos de otimização. A base de dados possuia 107.402 textos onde 85.921 foram usados no treino e 21.481 foram usados na validação.
 
 ## **BACKGROUND E TRABALHOS RELACIONADOS** <!-- Douglas -->
+
+Com a ascensão e popularização de cada vez mais tecnologias voltadas para a criação de modelos de NLP, é notório observar que muitas abordagens vêm surgindo e inspirando cada vez mais pessoas a trabalhar embasados em determinadas soluções. De tal modo, é necessário destacar alguns projetos que se assimilam ao StorIA e que aumentam a gama de programas com solução de processamento de linguagem natural para melhor compreensão e estudo. 
+
+**1. Write with transformer**
+
+[Transformer](https://transformer.huggingface.co/) -
+Construído e idealizado pela comunidade de inteligência artificial, Hugging Face, o Write with Transformer, é a web app de demonstração oficial do transformers. Nela a NLP da ferramenta é utilizada para completar inputs que o usuário à medida que ele vai escrevendo em um ambiente de escrita similar ao Microsoft Word. O usuário pode optar por iniciar um texto do zero, gerar um texto inicial aleatório e ir recebendo sugestões do modelo conforme vai escrevendo.
+
+**2. AI Dungeon**
+
+[AI Dungeon](https://play.aidungeon.io/main/home) -
+O AI Dungeon é um jogo online gratuito baseado em uma aventura de textos, simulando uma mesa de RPG. Nela o programa é utilizado para gerar a história enquanto o jogador é responsável por agir, falar ou complementar a história dizendo o que aconteceria em seguida. A ideia desse jogo foi concebida por um estudante chamado Nick Walton durante uma hackathon, e foi inicialmente desenvolvida utilizando uma versão inicial da rede neural GPT-2.
+
 
 ## **CONCLUSÃO** <!-- Luiz -->
 
