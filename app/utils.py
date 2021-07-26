@@ -68,8 +68,8 @@ class Story_generator:
 
         story = self.tokenizer.decode(beam_outputs[0], skip_special_tokens=False)
 
-        story = sub("<|startoftext|>", "", story)
-        story = sub("<|endoftext|>", "", story)
+        """story = sub("<|startoftext|>", "", story)
+        story = sub("<|endoftext|>", "", story)"""
 
         return story
 
