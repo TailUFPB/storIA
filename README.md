@@ -1,7 +1,10 @@
 [![author](https://img.shields.io/badge/author-felipehonorato1-purple.svg)](https://github.com/felipehonorato1)
-[![author](https://img.shields.io/badge/author-GuilhermeJC13-black.svg)](https://github.com/GuilhermeJC13) 
-[![author](https://img.shields.io/badge/author-DougsterS-blue.svg)](https://github.com/DougsterS) 
-[![author](https://img.shields.io/badge/author-luizfsoares-yellow.svg)](https://github.com/luizfsoares)  
+[![author](https://img.shields.io/badge/author-GuilhermeJC13-blue.svg)](https://github.com/GuilhermeJC13) 
+[![author](https://img.shields.io/badge/author-DougsterS-brown.svg)](https://github.com/DougsterS) 
+[![author](https://img.shields.io/badge/author-luizfsoares-yellow.svg)](https://github.com/luizfsoares) 
+[![author](https://img.shields.io/badge/author-romulokps-green.svg)](https://github.com/romulokps)
+[![author](https://img.shields.io/badge/author-voczie-red.svg)](https://github.com/voczie) 
+
 [![](https://img.shields.io/badge/python-3.7+-cyan.svg)](https://www.python.org/downloads/release/python-365/)
 
 # StorIA
@@ -9,12 +12,13 @@ This project is focused on the collaborative writing between the user and our AI
 
 The data used was scrapped of subreddits such as [nosleep](https://www.reddit.com/r/nosleep/), [shortscarystories](https://www.reddit.com/r/shortscarystories/). 
 
+Check out our [project](https://storia-taill.herokuapp.com/).
+
 ---
 
 ## Table of Contents
 - [StorIA](#StorIA)
   - [Table of Contents](#table-of-contents)
-  - [Interface](#interface)
   - [Assignments](#assignments)
   - [Clone](#clone)
   - [Authors](#authors)
@@ -23,7 +27,7 @@ The data used was scrapped of subreddits such as [nosleep](https://www.reddit.co
 ---
 ## Assignments
 
-### **CONSTRUÇÃO DO DATASET** <!-- Rômulo -->
+### **CONSTRUÇÃO DO DATASET**
 
 Para treinar o modelo, será necessário baixar uma boa quantidade os posts da sub desejada do Reddit. Precisamos dos posts e da popularidade de cada post.  A API do próprio Reddit já permite isso. Para utilizá-la é necessário criar uma conta e solicitar acesso a [API](https://www.reddit.com/dev/api/). Depois de criada a conta, utilizamos a biblioteca [PRAW](https://praw.readthedocs.io/en/stable/) e entramos com os dados de autenticação da gerados na etapa anterior. A API deve retornar os posts que irão compor o dataframe que será utilizado para treinar o modelo. Etretanto existe uma limitação para 1000 posts. Temos duas opções: podemos pegar os 1000 mais populares ou podemos pegar os 1000 mais recentes. Outra opção que a API fornece é retornar o post referente a algum id específico.  Uma das ideias para conseguir baixar mais do que essa limitação foi usar a função random da API, que retorna um post aleatório. Depois disso, repetiríamos a função random X vezes até conseguir uma quantidade
 
@@ -43,7 +47,7 @@ Separamos nossos dados tratados em duas váriaveis, o dataset de treinamento, qu
 
 Executadas as etapas supracitadas, prosseguimos com o treinamento do modelo. 
 
-### **ABORDAGEM** <!-- Guilherme -->
+### **ABORDAGEM**
 
 Optamos pela utilização do modelo transformer para o treinamento da nossa rede neural. Essa escolha se deu pelo fato da mesma ser o atual estado da arte para modelos de linguagem focados na geração textual, superando até modelos clássicos como os RNNs padrões, GRUs e até as LSTM, que por muito tempo foram os modelos mais utilizados para esse tipo de trabalho, mas que sofriam de problemas ligados à otimização, visto que as células utilizadas não processam simultaneamente uma sequência de palavras, e sim sequencialmente palavra por palavra, o que aumentava consideravelmente o tempo de treinamento. Além disso, os transformers possuem uma maneira mais eficiente de recorrer às informações passadas. Enquanto as LSTMs e as GRUs utilizam das células de mémoria para se basear nas próximas gerações, os transformers têm acesso direto ao contexto, sem utilizar dessas células citadas anteriormente.
 
