@@ -23,6 +23,8 @@ Pensando nisso, o projeto utiliza de modelos de inteligência artificial que per
 
 ## **CONSTRUÇÃO DO DATASET** <!-- Rômulo -->
 
+Para treinar o modelo, será necessário baixar uma boa quantidade os posts da sub desejada do Reddit. Precisamos dos posts e da popularidade de cada post.  A API do próprio Reddit já permite isso. Para utilizá-la é necessário criar uma conta e solicitar acesso a [API](https://www.reddit.com/dev/api/). Depois de criada a conta, utilizamos a biblioteca [PRAW](https://praw.readthedocs.io/en/stable/) e entramos com os dados de autenticação da gerados na etapa anterior. A API deve retornar os posts que irão compor o dataframe que será utilizado para treinar o modelo. Etretanto existe uma limitação para 1000 posts. Temos duas opções: podemos pegar os 1000 mais populares ou podemos pegar os 1000 mais recentes. Outra opção que a API fornece é retornar o post referente a algum id específico.  Uma das ideias para conseguir baixar mais do que essa limitação foi usar a função random da API, que retorna um post aleatório. Depois disso, repetiríamos a função random X vezes até conseguir uma quantidade
+
 ## **PRÉ-PROCESSAMENTO** <!-- Victória -->
 
 O pré-processamento feito consiste em buscar remover imperfeições dos textos do nosso dataset, algo que é bastante comum em dados que não são totalmente controlados como os obtidos em fóruns e redes sociais. Essa etapa é de fundamental importância pois o texto visto servirá de "molde" para os textos que serão gerados pela máquina.
