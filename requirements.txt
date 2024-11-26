@@ -1,6 +1,6 @@
 praw
 pandas 
 langdetect
-re
+flask
 transformers
 datasets
