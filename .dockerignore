@@ -1,0 +1,10 @@
+# Ignore a pasta de ambiente virtual
+venv/
+
+# Ignore outros arquivos desnecessários
+*.pyc
+*.pyo
+__pycache__/
+.idea/
+.vscode/
+.DS_Store
