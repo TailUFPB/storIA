@@ -1,0 +1,48 @@
+#version: '3.9'
+
+services:
+  api:
+    build:
+      context: .  # Diretório do Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Porta para acessar a aplicação
+    volumes:
+      - .:/app  # Monta o diretório atual no container
+    environment:
+      - ENV=production  # Variável de ambiente para o container
+
+  database:
+    image: postgres:15  # Imagem do PostgreSQL
+    container_name: db
+    ports:
+      - "5432:5432"  # Porta padrão do PostgreSQL
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: storIA
+    volumes:
+      - db_data:/var/lib/postgresql/data  # Persistência de dados
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"  # Porta padrão do Prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Configuração do Prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"  # Porta padrão do Grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin  # Usuário padrão do Grafana
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Senha padrão do Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana  # Volume persistente para o Grafana
+
+volumes:
+  db_data:  # Volume para o banco de dados
+  grafana-data:  # Volume persistente para o Grafana
