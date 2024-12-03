@@ -1,34 +1,36 @@
 from flask import Flask, render_template, request
-import utils
-from test import *
+from story import Story_generator
+
+story_generator = Story_generator()
 
 app = Flask(__name__, template_folder='templates')
 
 @app.route("/")
 def hello():
+    """
+    Main page of the app, where the user can input the text, choose the length and temperature of the story
+    This page also shows the generated story, if left empty, it generates a story from scratch
+    The user can also access the social media and members pages
+    """
     return render_template('index.html')
 
 @app.route("/submit", methods = ["POST", "GET"])
 def submit():
-
+    """
+    Params: text, length and temperature
+    Returns: generated story
+    """
     data = request.form
+    input_text = data.get('text[]') # Default text not needed, it creates from scratch if empty
+    size = int(data.get('length[]')) # Default size comes from the form
+    temperature = float(data.get('temperature[]')) # Default temperature also comes from the form
 
-
-    print(data['text[]'])
-
-    example = check_token(data['text[]'])
-
-    input_len = len(example.split())
-    size = data['length[]']# DEFINIDO PELO USUÁRIO DEFAULT 50
+    try:
+        story = story_generator.generate_story(input_text, size, temperature)
+        return render_template('index.html', suggestion_text=story)
     
-    output = query({"inputs": example,
-                "parameters": {'repetition_penalty': float(1.2), 'num_beams':5,
-                               'no_repeat_ngram_size':3, 'max_length':input_len + int(size)}})
-    print(output[0].get('generated_text'))
-    
-
-    
-    return render_template('index.html', suggestion_text=remove_token(output[0].get('generated_text')))
+    except Exception as e:
+        return render_template('index.html', suggestion_text=f"Error generating story:\n{e}")
 
 @app.route("/social")
 def social():
@@ -37,9 +39,6 @@ def social():
 @app.route("/members")
 def members():
     return render_template('members.html')
-
-
-
 
 if __name__ == "__main__":
     app.run()

@@ -4,3 +4,5 @@ langdetect
 re
 transformers
 datasets
+Flask
+torch

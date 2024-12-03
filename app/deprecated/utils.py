@@ -1,4 +1,4 @@
-from transformers import GPT2Tokenizer, GPT2LMHeadModel
+"""  from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from transformers import set_seed
 import random
 from transformers import pipeline
@@ -6,7 +6,7 @@ from transformers import pipeline
 class Story_generator:
 
     def __init__(self):
-        self.model_path = "V-3.0\checkpoint-53705"
+        self.model_path = "model\checkpoint-53705"
 
         set_seed(random.randint(0, 999))
 
@@ -23,10 +23,10 @@ class Story_generator:
 
 
     def clean_text(self, text) -> str:
-        """
+
         Params: Input text
         Returns: treated input text (whithout spaces on the end, lower cased and with start token)
-        """
+
         restart = True
 
         while(restart):
@@ -41,10 +41,10 @@ class Story_generator:
 
 
     def generate_story(self, text, size, temperature) -> str:
-        """
+      
         Params: Input text, max size and temperature
         Returns: generated story
-        """
+      
 
         if text != "":
             text = self.clean_text(text)
@@ -71,4 +71,4 @@ story = Story_generator()
 
 example = story.generate_story("", 50, 1.2 )
 
-print("\n" +example+ "\n")
+print("\n" +example+ "\n" """
