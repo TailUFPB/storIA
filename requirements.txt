@@ -4,3 +4,5 @@ langdetect
 flask
 transformers
 datasets
+prometheus_client
+torch

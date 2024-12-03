@@ -1,4 +1,4 @@
-#version: '3.9'
+version: '3.9'
 
 services:
   api:
@@ -11,18 +11,8 @@ services:
       - .:/app  # Monta o diretório atual no container
     environment:
       - ENV=production  # Variável de ambiente para o container
-
-  database:
-    image: postgres:15  # Imagem do PostgreSQL
-    container_name: db
-    ports:
-      - "5432:5432"  # Porta padrão do PostgreSQL
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: storIA
-    volumes:
-      - db_data:/var/lib/postgresql/data  # Persistência de dados
+    networks:
+      - monitoring-net  # Rede personalizada para comunicação interna
 
   prometheus:
     image: prom/prometheus:latest
@@ -31,6 +21,8 @@ services:
       - "9090:9090"  # Porta padrão do Prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Configuração do Prometheus
+    networks:
+      - monitoring-net  # Rede personalizada para comunicação interna
 
   grafana:
     image: grafana/grafana:latest
@@ -38,11 +30,16 @@ services:
     ports:
       - "3000:3000"  # Porta padrão do Grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin  # Usuário padrão do Grafana
-      - GF_SECURITY_ADMIN_PASSWORD=admin  # Senha padrão do Grafana
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}  # Usuário definido no .env
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}  # Senha definida no .env
     volumes:
       - grafana-data:/var/lib/grafana  # Volume persistente para o Grafana
+    networks:
+      - monitoring-net  # Rede personalizada para comunicação interna
 
 volumes:
-  db_data:  # Volume para o banco de dados
   grafana-data:  # Volume persistente para o Grafana
+
+networks:
+  monitoring-net:
+    driver: bridge  # Rede personalizada para os serviços

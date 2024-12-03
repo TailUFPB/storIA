@@ -1,43 +1,57 @@
 from flask import Flask, render_template, request
-import utils
-from test import *
+from story import Story_generator
+from prometheus_client import Counter, generate_latest, REGISTRY
+import os
+
+
+story_generator = Story_generator()
 
 app = Flask(__name__, template_folder='templates')
 
+# Métricas Prometheus
+REQUEST_COUNT = Counter('flask_app_requests_total', 'Total de requisições para o app', ['method', 'endpoint'])
+ERROR_COUNT = Counter('flask_app_errors_total', 'Total de erros', ['method', 'endpoint'])
+
+# Endpoint principal
 @app.route("/")
 def hello():
+    REQUEST_COUNT.labels(method='GET', endpoint='/').inc()
     return render_template('index.html')
 
-@app.route("/submit", methods = ["POST", "GET"])
+# Endpoint para envio de dados
+@app.route("/submit", methods=["POST", "GET"])
 def submit():
+    REQUEST_COUNT.labels(method=request.method, endpoint='/submit').inc()
 
     data = request.form
+    input_text = data.get('text[]')
+    size = int(data.get('length[]'))
+    temperature = float(data.get('temperature[]'))
 
+    try:
+        story = story_generator.generate_story(input_text, size, temperature)
+        return render_template('index.html', suggestion_text=story)
+    except Exception as e:
+        ERROR_COUNT.labels(method=request.method, endpoint='/submit').inc()
+        return render_template('index.html', suggestion_text=f"Error generating story:\n{e}")
 
-    print(data['text[]'])
-
-    example = check_token(data['text[]'])
-
-    input_len = len(example.split())
-    size = data['length[]']# DEFINIDO PELO USUÁRIO DEFAULT 50
-    
-    output = query({"inputs": example,
-                "parameters": {'repetition_penalty': float(1.2), 'num_beams':5,
-                               'no_repeat_ngram_size':3, 'max_length':input_len + int(size)}})
-    print(output[0].get('generated_text'))
-    
-
-    
-    return render_template('index.html', suggestion_text=remove_token(output[0].get('generated_text')))
-
+# Endpoint para página social
 @app.route("/social")
 def social():
+    REQUEST_COUNT.labels(method='GET', endpoint='/social').inc()
     return render_template('social.html')
 
+# Endpoint para página de membros
 @app.route("/members")
 def members():
+    REQUEST_COUNT.labels(method='GET', endpoint='/members').inc()
     return render_template('members.html')
 
+# Endpoint de métricas Prometheus
+@app.route("/metrics")
+def metrics():
+    return generate_latest(REGISTRY), 200, {'Content-Type': 'text/plain; charset=utf-8'}
 
+# Inicia o servidor Flask
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host='0.0.0.0', port=5000)
