@@ -6,3 +6,6 @@ transformers
 datasets
 prometheus_client
 torch
+psutil
+GPUtil
+python-dotenv
