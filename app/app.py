@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from story import Story_generator
+from utils import storia_logger
 
 story_generator = Story_generator()
 
@@ -27,10 +28,10 @@ def submit():
 
     try:
         story = story_generator.generate_story(input_text, size, temperature)
-        return render_template('index.html', suggestion_text=story)
+        return render_template('index.html', suggestion_text=story), storia_logger.info(f"Story generation successful")
     
     except Exception as e:
-        return render_template('index.html', suggestion_text=f"Error generating story:\n{e}")
+        return render_template('index.html', suggestion_text=f"Error generating story:\n{e}"), storia_logger.error(f"Error generating story: {e}")
 
 @app.route("/social")
 def social():
