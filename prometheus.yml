@@ -9,4 +9,8 @@ scrape_configs:
 
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']  # Monitora o próprio Prometheus
+      - targets: ['prometheus:9090']  # Monitora o contêiner do Prometheus
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']  # Monitora o Loki

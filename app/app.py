@@ -1,6 +1,7 @@
 from flask import Flask
 from views import init_routes
 from metrics import start_metrics
+from logger import storia_logger
 
 app = Flask(__name__, template_folder='templates')
 
@@ -9,4 +10,8 @@ init_routes(app)
 start_metrics(app)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    try:
+        storia_logger.info("Iniciando a aplicação Flask")
+        app.run(host='0.0.0.0', port=5000)
+    except Exception as e:
+        storia_logger.error(f"Erro ao iniciar a aplicação Flask: {e}")

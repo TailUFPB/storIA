@@ -1,43 +1,84 @@
 services:
+  # --- Aplicação (API) ---
   api:
     build:
       context: .  # Diretório do Dockerfile
       dockerfile: Dockerfile
+    container_name: api
     ports:
-      - "5000:5000"  # Porta para acessar a aplicação
+      - "5000:5000"
     volumes:
-      - .:/app  # Monta o diretório atual no container
+      - .:/app
     environment:
-      - ENV=production  # Variável de ambiente para o container
+      - ENV=production
     networks:
-      - monitoring-net  # Rede personalizada para comunicação interna
+      - monitoring-net
 
+    # Aqui vem a configuração do "Docker Logging Driver"
+    logging:
+      driver: loki
+      options:
+        # URL do Loki (nome do serviço + porta, pois estão na mesma rede Docker)
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        # Rótulos (labels) extras para facilitar a consulta no Grafana
+        loki-external-labels: >
+          container=api,project_name=storIA
+
+  # --- Prometheus ---
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"  # Porta padrão do Prometheus
+      - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Configuração do Prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
-      - monitoring-net  # Rede personalizada para comunicação interna
+      - monitoring-net
 
+  # --- Grafana ---
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3000:3000"  # Porta padrão do Grafana
+      - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}  # Usuário definido no .env
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}  # Senha definida no .env
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes:
-      - grafana-data:/var/lib/grafana  # Volume persistente para o Grafana
+      - grafana-data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
     networks:
-      - monitoring-net  # Rede personalizada para comunicação interna
+      - monitoring-net
+
+  # --- Loki ---
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+    networks:
+      - monitoring-net
+  
+  # --- Promtail ---
+  promtail:
+    image: grafana/promtail:2.7.1
+    container_name: promtail
+    ports:
+      - "9080:9080"
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ../storIA/log:/var/log  # Mapeamento relativo para o diretório de logs
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yml
+    networks:
+      - monitoring-net
 
 volumes:
-  grafana-data:  # Volume persistente para o Grafana
+  grafana-data:
 
 networks:
   monitoring-net:
-    driver: bridge  # Rede personalizada para os serviços
+    name: monitoring-net
+    driver: bridge
