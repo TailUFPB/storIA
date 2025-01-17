@@ -13,16 +13,44 @@ services:
       - ENV=production
     networks:
       - monitoring-net
-
-    # Aqui vem a configuração do "Docker Logging Driver"
     logging:
       driver: loki
       options:
-        # URL do Loki (nome do serviço + porta, pois estão na mesma rede Docker)
         loki-url: "http://loki:3100/loki/api/v1/push"
-        # Rótulos (labels) extras para facilitar a consulta no Grafana
         loki-external-labels: >
           container=api,project_name=storIA
+
+  # --- Segunda Instância da Aplicação ---
+  api2:
+    build:
+      context: .  # Diretório do Dockerfile
+      dockerfile: Dockerfile
+    container_name: api2
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/app
+    environment:
+      - ENV=production
+    networks:
+      - monitoring-net
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: >
+          container=api2,project_name=storIA
+
+  # --- NGINX como Balanceador de Carga ---
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"  # Porta externa mapeada para o NGINX
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Monta a configuração do NGINX
+    networks:
+      - monitoring-net
 
   # --- Prometheus ---
   prometheus:
@@ -70,7 +98,7 @@ services:
       - "9080:9080"
     command: -config.file=/etc/promtail/promtail-config.yml
     volumes:
-      - ../storIA/log:/var/log  # Mapeamento relativo para o diretório de logs
+      - ../storIA/log:/var/log
       - ./promtail-config.yml:/etc/promtail/promtail-config.yml
     networks:
       - monitoring-net
