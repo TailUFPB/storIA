@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath  # Usar o mesmo nome visto no kubectl get storageclass
+  resources:
+    requests:
+      storage: 10Gi

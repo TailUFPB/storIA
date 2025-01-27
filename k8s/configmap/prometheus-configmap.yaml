@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'api'
+        static_configs:
+          - targets: ['api-service:8000']  # Usar nome do serviço k8s
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis-service:6379']

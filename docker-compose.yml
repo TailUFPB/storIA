@@ -1,18 +1,36 @@
 services:
-  # --- Aplicação (API) ---
-  api:
-    build:
-      context: .  # Diretório do Dockerfile
-      dockerfile: Dockerfile
-    container_name: api
-    ports:
-      - "5000:5000"
-    volumes:
-      - .:/app
-    environment:
-      - ENV=production
+  # --- Redis --- (mantido igual)
+  redis:
+    image: redis:alpine
     networks:
       - monitoring-net
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      
+  # --- API (com replicação automática) ---
+  api:
+    build:
+      context: .
+    networks:
+      - monitoring-net
+    environment:
+      - ENV=production
+    depends_on:
+      model-service:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    deploy:  # Configuração de replicação
+      replicas: 2  # Cria 2 instâncias automaticamente
+      resources:
+        limits:
+          cpu: "1"
+          memory: "512Mi"
     logging:
       driver: loki
       options:
@@ -20,42 +38,22 @@ services:
         loki-external-labels: >
           container=api,project_name=storIA
 
-  # --- Segunda Instância da Aplicação ---
-  api2:
-    build:
-      context: .  # Diretório do Dockerfile
-      dockerfile: Dockerfile
-    container_name: api2
-    ports:
-      - "5001:5000"
-    volumes:
-      - .:/app
-    environment:
-      - ENV=production
-    networks:
-      - monitoring-net
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://loki:3100/loki/api/v1/push"
-        loki-external-labels: >
-          container=api2,project_name=storIA
-
-  # --- NGINX como Balanceador de Carga ---
+  # --- NGINX (configuração simplificada) ---
   nginx:
     image: nginx:latest
-    container_name: nginx
+    depends_on:
+      api:
+        condition: service_started
     ports:
-      - "80:80"  # Porta externa mapeada para o NGINX
+      - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Monta a configuração do NGINX
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - monitoring-net
 
-  # --- Prometheus ---
+  # --- Monitoring Stack (mantido igual) ---
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -63,10 +61,8 @@ services:
     networks:
       - monitoring-net
 
-  # --- Grafana ---
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
     ports:
       - "3000:3000"
     environment:
@@ -78,10 +74,8 @@ services:
     networks:
       - monitoring-net
 
-  # --- Loki ---
   loki:
     image: grafana/loki:latest
-    container_name: loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/loki-config.yml
@@ -89,14 +83,9 @@ services:
       - ./loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - monitoring-net
-  
-  # --- Promtail ---
+
   promtail:
     image: grafana/promtail:2.7.1
-    container_name: promtail
-    ports:
-      - "9080:9080"
-    command: -config.file=/etc/promtail/promtail-config.yml
     volumes:
       - ../storIA/log:/var/log
       - ./promtail-config.yml:/etc/promtail/promtail-config.yml
@@ -105,8 +94,8 @@ services:
 
 volumes:
   grafana-data:
+  redis-data:
 
 networks:
   monitoring-net:
-    name: monitoring-net
     driver: bridge
