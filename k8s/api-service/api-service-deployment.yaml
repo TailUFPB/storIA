@@ -15,16 +15,16 @@ spec:
       containers:
         - name: api
           image: api-service:latest 
-          imagePullPolicy: Always               # Garante que a imagem mais recente seja puxada
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
           resources:
             requests:
               cpu: "2"
-              memory: "512Mi"       # Aumentado de 256Mi para 512Mi
+              memory: "1Gi"       # Aumentado de 256Mi para 512Mi
             limits:
               cpu: "4"
-              memory: "1Gi"         # Aumentado de 512Mi para 1Gi
+              memory: "2Gi"         # Aumentado de 512Mi para 1Gi
           livenessProbe:
             httpGet:
               path: /health
@@ -37,7 +37,7 @@ spec:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3

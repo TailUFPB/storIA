@@ -5,28 +5,33 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: grafana  # Deve combinar com o service
+      app: grafana
   template:
     metadata:
       labels:
-        app: grafana  # Label essencial
+        app: grafana
     spec:
       containers:
       - name: grafana
         image: grafana/grafana:latest
         ports:
         - containerPort: 3000
+        env:  # Credenciais via Secret
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: grafana-auth  # Secret criado anteriormente
+                key: GF_SECURITY_ADMIN_USER
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: grafana-auth
+                key: GF_SECURITY_ADMIN_PASSWORD
         volumeMounts:
-        - name: grafana-secret  # Secret para dados sensíveis
-          mountPath: /etc/grafana/grafana.ini
-          subPath: grafana.ini
-        - name: grafana-config  # ConfigMap para demais configurações
+        - name: grafana-config  # ConfigMap com a fonte de dados do Loki
           mountPath: /etc/grafana/provisioning/datasources/loki-datasource.yaml
           subPath: loki-datasource.yaml
       volumes:
-      - name: grafana-secret
-        secret:
-          secretName: grafana-smtp
       - name: grafana-config
         configMap:
-          name: grafana-config  # Referência ao ConfigMap
+          name: grafana-config  # ConfigMap com o YAML do Loki
