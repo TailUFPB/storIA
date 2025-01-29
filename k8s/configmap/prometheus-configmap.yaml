@@ -6,10 +6,25 @@ data:
   prometheus.yml: |-
     global:
       scrape_interval: 15s
+     # Define a porta de escuta do Prometheus
     scrape_configs:
+      # Jobs existentes
       - job_name: 'api'
         static_configs:
-          - targets: ['api-service:8000']  # Usar nome do serviço k8s
+          - targets: ['api-service:8000']
       - job_name: 'redis'
         static_configs:
-          - targets: ['redis-service:6379']
+          - targets: ['redis-exporter:9121']
+
+      # Adicione os novos jobs abaixo
+      - job_name: 'loki'          # Metrics do Loki
+        static_configs:
+          - targets: ['loki:3100']  # Nome do serviço Loki no cluster
+
+      - job_name: 'promtail'      # Metrics do Promtail
+        static_configs:
+          - targets: ['promtail:9080']  # Porta padrão do Promtail
+
+      - job_name: 'grafana'       # Metrics do Grafana (opcional)
+        static_configs:
+          - targets: ['grafana:3000']   # Porta do Grafana

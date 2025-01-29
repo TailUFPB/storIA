@@ -5,8 +5,8 @@ metadata:
 data:
   promtail.yml: |-
     server:
-      http_listen_port: 9080
-      grpc_listen_port: 0
+      http_listen_port: 9080  # OK (porta de métricas)
+      grpc_listen_port: 0 # OK (desabilitado)
 
     positions:
       filename: /var/log/positions.yaml

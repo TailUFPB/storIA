@@ -3,16 +3,23 @@ kind: ConfigMap
 metadata:
   name: grafana-config
 data:
-  # Configurações adicionais (ex: plugins, dashboards padrão)
   custom.ini: |-
     [plugins]
     allow_loading_unsigned_plugins = true
 
-  # Datasource para Loki (opcional)
-  loki-datasource.yaml: |-
+    [smtp]  # Adicione as configurações SMTP aqui
+    enabled = true
+    host = smtp.gmail.com:587
+    user = tailmlops@gmail.com
+    password = saeg cama lgll ycev
+    from_address = tailmlops@gmail.com
+    from_name = Grafana Alerts
+    starttls_policy = yes
+
+  loki-datasource.yaml: |-  # Mantenha o datasource do Loki
     apiVersion: 1
     datasources:
       - name: Loki
         type: loki
         access: proxy
-        url: http://loki-service:3100
+        url: http://loki:3100  # Use o nome do serviço do Loki

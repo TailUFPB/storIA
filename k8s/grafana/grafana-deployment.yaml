@@ -27,11 +27,20 @@ spec:
               secretKeyRef:
                 name: grafana-auth
                 key: GF_SECURITY_ADMIN_PASSWORD
+          # Configurações de métricas
+          - name: GF_METRICS_ENABLED
+            value: "true"
+          - name: GF_METRICS_ENABLE_BASIC_AUTH
+            value: "false"
+          - name: GF_METRICS_HTTP_PORT
+            value: "3000"
         volumeMounts:
         - name: grafana-config  # ConfigMap com a fonte de dados do Loki
-          mountPath: /etc/grafana/provisioning/datasources/loki-datasource.yaml
-          subPath: loki-datasource.yaml
+          mountPath: /etc/grafana/provisioning/datasources/
       volumes:
       - name: grafana-config
         configMap:
           name: grafana-config  # ConfigMap com o YAML do Loki
+          items:  # Especifique quais chaves do ConfigMap serão incluídas
+            - key: loki-datasource.yaml
+              path: loki-datasource.yaml  # Nome do arquivo no diretório de destino

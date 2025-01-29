@@ -16,7 +16,7 @@ spec:
       - name: loki
         image: grafana/loki:latest
         args:  # Adicione este bloco para especificar o arquivo de configuração
-          - "-config.file=/etc/loki/loki-config.yml"
+          - "-config.file=/etc/loki/loki.yml"  # Caminho absoluto
         ports:
         - containerPort: 3100
           name: http-metrics
