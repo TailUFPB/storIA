@@ -5,14 +5,14 @@ metadata:
 data:
   promtail.yml: |-
     server:
-      http_listen_port: 9080  # OK (porta de métricas)
-      grpc_listen_port: 0 # OK (desabilitado)
+      http_listen_port: 9080
+      grpc_listen_port: 0
 
     positions:
       filename: /var/log/positions.yaml
 
     clients:
-      - url: http://loki:3100/loki/api/v1/push  # Nome correto do serviço Loki
+      - url: http://loki:3100/loki/api/v1/push  # Endpoint do Loki
 
     scrape_configs:
       - job_name: storIA_logs 
@@ -21,4 +21,4 @@ data:
             labels:
               job: storIA
               logger: storIA_logger
-              __path__: /var/log/storIA/*.log  # Coletar todos arquivos .log
+              __path__: /var/log/storIA/*.log  # Caminho dos logs no container

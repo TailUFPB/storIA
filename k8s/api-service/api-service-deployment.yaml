@@ -21,15 +21,15 @@ spec:
           resources:
             requests:
               cpu: "2"
-              memory: "1Gi"       # Aumentado de 256Mi para 512Mi
+              memory: "2Gi"
             limits:
               cpu: "4"
-              memory: "2Gi"         # Aumentado de 512Mi para 1Gi
+              memory: "4Gi"
           livenessProbe:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 60        # Aumentado para dar mais tempo de inicialização
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
@@ -41,3 +41,10 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /var/log/storIA  # Mesmo caminho do Promtail
+      volumes:
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: promtail-logs-pvc  # PVC compartilhado

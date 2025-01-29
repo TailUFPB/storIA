@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
       - name: loki
-        image: grafana/loki:latest
-        args:  # Adicione este bloco para especificar o arquivo de configuração
-          - "-config.file=/etc/loki/loki.yml"  # Caminho absoluto
+        image: grafana/loki:2.9.1  # Versão fixa para evitar quebras
+        args:
+          - "-config.file=/etc/loki/loki.yml"
         ports:
         - containerPort: 3100
           name: http-metrics
@@ -24,13 +24,13 @@ spec:
           name: grpc
         volumeMounts:
         - name: config
-          mountPath: /etc/loki  # Diretório onde o arquivo será montado
+          mountPath: /etc/loki  # ConfigMap com as configurações
         - name: storage
-          mountPath: /tmp/loki
+          mountPath: /loki/data  # Caminho persistente via PVC
       volumes:
       - name: config
         configMap:
           name: loki-config
-          defaultMode: 420  # Permissões de leitura para o arquivo (0644)
       - name: storage
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: loki-storage  # PVC definido anteriormente

@@ -4,7 +4,7 @@ import os
 
 def setup_logger():
     logger = logging.getLogger("storIA_logger")
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)  # Em produção, evite DEBUG
 
     # Formatação padrão dos logs
     formatter = logging.Formatter(
@@ -12,8 +12,8 @@ def setup_logger():
     )
 
     # Cria diretório de logs, se não existir
-    log_directory = "log"
-    os.makedirs(log_directory, exist_ok=True)  # equivale a if not exists
+    log_directory = "/var/log/storIA"  # Caminho montado via PVC
+    os.makedirs(log_directory, exist_ok=True)
 
     # Configura arquivo de log com rodízio (10 MB, 1 backup)
     log_file = os.path.join(log_directory, "storia.log")

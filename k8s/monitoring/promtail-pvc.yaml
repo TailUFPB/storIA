@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: hostpath  # Usa o StorageClass padrão do cluster
   resources:
     requests:
       storage: 1Gi  # Tamanho ajustável
-  storageClassName: standard  # Usa o StorageClass padrão do cluster
