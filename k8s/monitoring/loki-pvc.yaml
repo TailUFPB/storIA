@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: hostpath  # Usar o mesmo nome visto no kubectl get storageclass
+  storageClassName: ""  # Usa o StorageClass padrão do cluster
   resources:
     requests:
       storage: 10Gi

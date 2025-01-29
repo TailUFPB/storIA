@@ -13,16 +13,21 @@ spec:
         app: promtail
     spec:
       containers:
-      - name: promtail
-        image: grafana/promtail:latest
-        args:
-          - "-config.file=/etc/promtail/promtail.yml"
-        ports:
-        - containerPort: 9080
-        volumeMounts:
-        - name: promtail-config
-          mountPath: /etc/promtail
+        - name: promtail
+          image: grafana/promtail:2.9.1
+          args:
+            - "-config.file=/etc/promtail/promtail.yml"
+          ports:
+            - containerPort: 9080
+          volumeMounts:
+            - name: promtail-config
+              mountPath: /etc/promtail
+            - name: logs-volume
+              mountPath: /var/log/storIA  # Caminho no container
       volumes:
-      - name: promtail-config
-        configMap:
-          name: promtail-config
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: promtail-logs-pvc  # Usa um PVC

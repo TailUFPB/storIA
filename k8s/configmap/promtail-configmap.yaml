@@ -20,4 +20,5 @@ data:
           - targets: [localhost]
             labels:
               job: storIA
+              logger: storIA_logger
               __path__: /var/log/storIA/*.log  # Coletar todos arquivos .log
