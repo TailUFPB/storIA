@@ -1,8 +1,13 @@
 from flask import Flask
+from app.routes.main import main_bp  # Importa o Blueprint
 from app.views import init_routes
 from app.metrics import start_metrics
 from app.logger import storia_logger
+from app.routes.stories import stories_bp
 
+app = Flask(__name__)
+app.register_blueprint(main_bp)
+app.register_blueprint(stories_bp)
 app = Flask(__name__, template_folder='templates')
 
 # Inicializar rotas e métricas
