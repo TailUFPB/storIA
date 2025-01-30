@@ -1,46 +1,13 @@
 from flask import render_template, request
-from prometheus_client import Counter
 from app.logger import storia_logger
-import sys
 import redis
 from app.story import StoryGenerator
-
-# --- Configuração do Redis para Caching ---
-try:
-    redis_client = redis.Redis(
-        host='redis',
-        port=6379,
-        db=0,
-        socket_connect_timeout=2,
-        socket_timeout=2
-    )
-    redis_client.ping()  # Testa a conexão
-    storia_logger.info("Conexão com Redis estabelecida com sucesso")
-except redis.RedisError as e:
-    storia_logger.critical(f"Falha na conexão com Redis: {e}")
-    sys.exit(1)
-
-# --- Contadores Prometheus Atualizados ---
-REQUEST_COUNT = Counter(
-    'flask_app_requests_total',
-    'Total de requisições para o app',
-    ['method', 'endpoint']
-)
-
-ERROR_COUNT = Counter(
-    'flask_app_errors_total',
-    'Total de erros',
-    ['method', 'endpoint']
-)
-
-CACHE_HITS = Counter(
-    'flask_app_cache_hits_total',
-    'Total de acertos no cache'
-)
-
-CACHE_MISSES = Counter(
-    'flask_app_cache_misses_total',
-    'Total de faltas no cache'
+from app.redis_connection import redis_client 
+from app.app_metrics import (
+    REQUEST_COUNT,
+    ERROR_COUNT,
+    CACHE_HITS,
+    CACHE_MISSES
 )
 
 # --- Função para Gerar Chave de Cache ---

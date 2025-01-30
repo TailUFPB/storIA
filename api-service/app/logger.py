@@ -4,7 +4,7 @@ import os
 
 def setup_logger():
     logger = logging.getLogger("storIA_logger")
-    logger.setLevel(logging.INFO)  # Em produção, evite DEBUG
+    logger.setLevel(logging.DEBUG)  # Em produção, evite DEBUG e use INFO
 
     # Formatação padrão dos logs
     formatter = logging.Formatter(

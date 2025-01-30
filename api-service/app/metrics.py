@@ -1,5 +1,5 @@
-from flask import Flask, Response, request, g
-from prometheus_client import Counter, Gauge, generate_latest, REGISTRY
+from flask import Response, g
+from prometheus_client import Gauge, generate_latest, REGISTRY
 import psutil
 import time
 import threading
