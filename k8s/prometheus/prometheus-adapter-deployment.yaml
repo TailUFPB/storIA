@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-adapter
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-adapter
+    spec:
+      serviceAccountName: prometheus-adapter
+      containers:
+        - name: prometheus-adapter
+          image: docker.io/openshift/prometheus-adapter:v0.10.0
+          args:
+            - --secure-port=6443
+            - --prometheus-url=http://prometheus-server.default.svc:9090 # Altere se necessário
+            - --config=/etc/adapter/config.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /etc/adapter
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-adapter-config

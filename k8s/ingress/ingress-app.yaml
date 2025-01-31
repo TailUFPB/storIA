@@ -1,11 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: storia-ingress
+  name: production-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # true se usar tls
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    - host: localhost
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -13,4 +17,4 @@ spec:
               service:
                 name: api-service
                 port:
-                  number: 80
+                  number: 8000
