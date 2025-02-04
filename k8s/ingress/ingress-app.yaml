@@ -5,10 +5,12 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false" # true se usar tls
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
   ingressClassName: nginx
   rules:
-    - host: localhost
+    - host: localhost  # ou domínimo
       http:
         paths:
           - path: /
@@ -17,4 +19,4 @@ spec:
               service:
                 name: api-service
                 port:
-                  number: 8000
+                  number: 8080

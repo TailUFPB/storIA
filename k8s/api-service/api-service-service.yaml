@@ -7,6 +7,6 @@ spec:
     app: api-service  # Certifique-se de que o selector bate com os labels do Deployment
   ports:
     - protocol: TCP
-      port: 8000  # Porta do Service
+      port: 8080  # Porta do Service
       targetPort: 5000  # Porta do container
   type: ClusterIP
