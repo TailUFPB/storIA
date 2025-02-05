@@ -13,3 +13,6 @@ gunicorn
 gevent
 redis
 rq
+pytest
+pytest-cov 
+requests

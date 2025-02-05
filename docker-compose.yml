@@ -92,6 +92,25 @@ services:
     networks:
       - monitoring-net
 
+test-runner:
+  build:
+    context: ./api-service
+  environment:
+    - REDIS_HOST=redis-test
+    - TESTING=True
+  depends_on:
+    redis-test:
+      condition: service_healthy
+  networks:
+    - monitoring-net
+  command: pytest /app/tests -v --disable-warnings
+
+
+
+
+
+
+
 volumes:
   grafana-data:
   redis-data:
