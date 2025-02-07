@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  type: ClusterIP  # Padrão para acesso interno
+  selector:
+    app: grafana  # Deve bater com o label do Deployment
+  ports:
+    - protocol: TCP
+      port: 3000  # Porta do Service
+      targetPort: 3000  # Porta do container

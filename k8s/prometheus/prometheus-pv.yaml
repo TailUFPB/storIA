@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheus-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath  # Deve bater com o PVC
+  hostPath:
+    path: /data/prometheus  # Pasta no host
+    type: DirectoryOrCreate

@@ -1,0 +1,120 @@
+services:
+  # --- Redis --- (mantido igual)
+  redis:
+    image: redis:alpine
+    networks:
+      - monitoring-net
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      
+  # --- API (com replicação automática) ---
+  api:
+    build:
+      context: .
+    networks:
+      - monitoring-net
+    environment:
+      - ENV=production
+    depends_on:
+      model-service:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    deploy:  # Configuração de replicação
+      replicas: 2  # Cria 2 instâncias automaticamente
+      resources:
+        limits:
+          cpu: "1"
+          memory: "512Mi"
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: >
+          container=api,project_name=storIA
+
+  # --- NGINX (configuração simplificada) ---
+  nginx:
+    image: nginx:latest
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - monitoring-net
+
+  # --- Monitoring Stack (mantido igual) ---
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring-net
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
+    networks:
+      - monitoring-net
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+    networks:
+      - monitoring-net
+
+  promtail:
+    image: grafana/promtail:2.7.1
+    volumes:
+      - ../storIA/log:/var/log
+      - ./promtail-config.yml:/etc/promtail/promtail-config.yml
+    networks:
+      - monitoring-net
+
+test-runner:
+  build:
+    context: ./api-service
+  environment:
+    - REDIS_HOST=redis-test
+    - TESTING=True
+  depends_on:
+    redis-test:
+      condition: service_healthy
+  networks:
+    - monitoring-net
+  command: pytest /app/tests -v --disable-warnings
+
+
+
+
+
+
+
+volumes:
+  grafana-data:
+  redis-data:
+
+networks:
+  monitoring-net:
+    driver: bridge
