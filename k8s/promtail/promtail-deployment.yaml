@@ -30,4 +30,4 @@ spec:
             name: promtail-config
         - name: logs-volume
           persistentVolumeClaim:
-            claimName: promtail-logs-pvc  # Usa um PVC
+            claimName: promtail-logs-pvc  

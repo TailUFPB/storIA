@@ -20,16 +20,16 @@ spec:
             - containerPort: 5000
           resources:
             requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
               cpu: "1"
               memory: "1Gi"
-            limits:
-              cpu: "2"
-              memory: "2Gi"
           livenessProbe:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 180
+            initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 10
             failureThreshold: 3
@@ -37,7 +37,7 @@ spec:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 180
+            initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 10
             failureThreshold: 3
@@ -47,4 +47,4 @@ spec:
       volumes:
         - name: logs-volume
           persistentVolumeClaim:
-            claimName: promtail-logs-pvc  # PVC compartilhado
+            claimName: promtail-logs-pvc  # PVC compartilhado (Esse PVC é compartilhado com o Promtail para que ele possa coletar os logs desse diretório.)

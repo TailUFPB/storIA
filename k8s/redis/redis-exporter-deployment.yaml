@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: redis-exporter
-        image: oliver006/redis_exporter:latest
+        image: oliver006/redis_exporter:latest # Redis Exporter para coletar métricas do Redis e expô-las ao Prometheus
         args:
           - "--redis.addr=redis:6379"
         ports:

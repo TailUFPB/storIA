@@ -4,14 +4,13 @@ metadata:
   name: production-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false" # true se usar tls
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # 
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
   ingressClassName: nginx
   rules:
-    - host: localhost  # ou domínimo
-      http:
+    - http:  # Lista de regras (cada item começa com "-")
         paths:
           - path: /
             pathType: Prefix
