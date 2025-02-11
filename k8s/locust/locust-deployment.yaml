@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust
+      role: master
+  template:
+    metadata:
+      labels:
+        app: locust
+        role: master
+    spec:
+      containers:
+        - name: locust-master
+          image: locustio/locust:latest
+          ports:
+            - containerPort: 8089
+            - containerPort: 5557
+          env:
+            - name: LOCUST_MODE
+              value: "master"
+            - name: LOCUST_MASTER_BIND_PORT
+              value: "5557"
+          command: ["locust"]
+          args:
+            - "-f"
+            - "/locust/locustfile.py"
+            - "--master"
+            - "--expect-workers=1"
+          volumeMounts:
+            - name: locust-scripts
+              mountPath: /locust
+      volumes:
+        - name: locust-scripts
+          configMap:
+            name: locust-config

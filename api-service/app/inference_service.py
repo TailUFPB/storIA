@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
-from app.story import StoryGenerator
+from app.story import Story_generator
 from app.logger import storia_logger
 
 app = Flask(__name__)
 
 # Carrega o modelo apenas uma vez quando o serviço inicia
 storia_logger.info("Carregando modelo no serviço de inferência...")
-generator = StoryGenerator()
+generator = Story_generator()
 storia_logger.info("Modelo carregado no serviço de inferência.")
 
 @app.route("/generate", methods=["POST"])
