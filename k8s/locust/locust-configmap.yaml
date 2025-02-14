@@ -5,47 +5,63 @@ metadata:
 data:
   locustfile.py: |
     from locust import HttpUser, task, between
+    import time
     import random
     import json
-
     # Lista de prompts para os testes
     PROMPTS = [
-        "Um dragão que cospe flores",
-        "Uma aventura no espaço sideral",
-        "Um misterioso castelo assombrado",
-        "Uma inteligência artificial que ganha consciência",
-        "Uma jornada através do tempo"
+        "A shadow lurking in the basement",
+        "Whispers in the abandoned house",
+        "A haunted forest at midnight",
+        "The cursed mirror in the attic",
+        "Footsteps in the empty hallway"
     ]
 
     class ApiUser(HttpUser):
         wait_time = between(0, 0.1)  # Evita grandes intervalos entre requisições
-        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx agora
+        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx
 
         @task
         def generate_story(self):
             prompt = random.choice(PROMPTS)
-            payload = {
-                "text": prompt,
-                "size": 100,
-                "temperature": 0.7
+            # Envia os dados como formulário, conforme esperado pela rota /submit
+            form_data = {
+                "text[]": prompt,
+                "length[]": "100",         # Lembrando que o views.py converte para int
+                "temperature[]": "0.7"       # e para float, respectivamente
             }
-            headers = {"Content-Type": "application/json"}
+            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            
+            with self.client.post("/submit", data=form_data, headers=headers, timeout=600, catch_response=True) as response:
+                if response.status_code == 200:
+                    try:
+                        res_data = response.json()
+                    except Exception as e:
+                        response.failure(f"Erro ao interpretar resposta JSON: {e}")
+                        return
+                    # Se o job já estiver finalizado, não precisa de polling
+                    if res_data.get("job_finished", False):
+                        response.success()
+                        return
 
-            try:
-                with self.client.post("/generate", json=payload, headers=headers, timeout=600, catch_response=True) as response:
-                    if response.status_code == 200:
-                        data = response.json()
-                        if "story" in data:
+                    # Caso contrário, obtemos o job_id e fazemos polling na rota /result/<job_id>
+                    job_id = res_data.get("job_id")
+                    if not job_id:
+                        response.failure("Job ID não retornado")
+                        return
+
+                    # Polling simples com limite de tentativas
+                    for _ in range(10):
+                        poll_response = self.client.get(f"/result/{job_id}", timeout=600)
+                        try:
+                            poll_data = poll_response.json()
+                        except Exception as e:
+                            response.failure(f"Erro ao interpretar polling JSON: {e}")
+                            return
+                        if poll_data.get("status") == "finished":
                             response.success()
-                        else:
-                            response.failure(f"Resposta inválida: {json.dumps(data)}")
-                    else:
-                        response.failure(f"Erro HTTP {response.status_code}")
-            except Exception as e:
-                self.environment.events.request_failure.fire(
-                    request_type="POST",
-                    name="/generate",
-                    response_time=0,
-                    response_length=0,
-                    exception=e,
-                )
+                            return
+                        time.sleep(1)
+                    response.failure("Job não finalizado dentro do tempo de polling")
+                else:
+                    response.failure(f"Erro HTTP {response.status_code}")
