@@ -26,3 +26,11 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
+        volumeMounts:
+          - name: storia-logs
+            mountPath: /var/log/storIA
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: /var/log/storIA
+            type: DirectoryOrCreate

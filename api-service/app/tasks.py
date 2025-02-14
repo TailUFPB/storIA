@@ -2,7 +2,7 @@ import requests
 from app.logger import storia_logger
 
 def generate_story_job(input_text, size, temperature):
-    inference_url = "http://inference-service:6000/generate"  # ajuste conforme o hostname e porta do serviço de inferência
+    inference_url = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/generate"  # ajuste conforme o hostname e porta do serviço de inferência
     payload = {
         "text": input_text,
         "size": size,

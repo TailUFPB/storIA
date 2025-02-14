@@ -29,12 +29,17 @@ spec:
           args:
             - "-f"
             - "/locust/locustfile.py"
-            - "--master"
-            - "--expect-workers=1"
+            - "--host=http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
           volumeMounts:
             - name: locust-scripts
               mountPath: /locust
+            - name: storia-logs
+              mountPath: /var/log/storIA
       volumes:
         - name: locust-scripts
           configMap:
             name: locust-config
+        - name: storia-logs
+          hostPath:
+            path: /var/log/storIA
+            type: DirectoryOrCreate

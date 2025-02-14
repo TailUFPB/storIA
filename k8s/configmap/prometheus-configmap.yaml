@@ -24,7 +24,3 @@ data:
       - job_name: 'promtail'      # Metrics do Promtail
         static_configs:
           - targets: ['promtail:9080']  # Porta padrão do Promtail
-
-      - job_name: 'grafana'       # Metrics do Grafana (opcional)
-        static_configs:
-          - targets: ['grafana:3000']   # Porta do Grafana

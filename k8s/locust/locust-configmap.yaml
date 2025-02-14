@@ -5,9 +5,10 @@ metadata:
 data:
   locustfile.py: |
     from locust import HttpUser, task, between
-    import random  # Para seleção aleatória de prompts
+    import random
+    import json
 
-    # Lista de prompts variados para teste realista
+    # Lista de prompts para os testes
     PROMPTS = [
         "Um dragão que cospe flores",
         "Uma aventura no espaço sideral",
@@ -17,20 +18,34 @@ data:
     ]
 
     class ApiUser(HttpUser):
-        wait_time = between(1, 3)
+        wait_time = between(0, 0.1)  # Evita grandes intervalos entre requisições
+        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx agora
 
         @task
         def generate_story(self):
-            # Seleciona um prompt aleatório
             prompt = random.choice(PROMPTS)
-            
-            # Envia a requisição para o endpoint correto (porta 5000)
-            self.client.post(
-                url="http://inference-service:6000/generate",  # Endpoint corrigido
-                json={
-                    "text": prompt,  # Chave corrigida (de "prompt" para "text")
-                    "size": 100,
-                    "temperature": 0.7
-                },
-                headers={"Content-Type": "application/json"}  # Header necessário
-            )
+            payload = {
+                "text": prompt,
+                "size": 100,
+                "temperature": 0.7
+            }
+            headers = {"Content-Type": "application/json"}
+
+            try:
+                with self.client.post("/generate", json=payload, headers=headers, timeout=600, catch_response=True) as response:
+                    if response.status_code == 200:
+                        data = response.json()
+                        if "story" in data:
+                            response.success()
+                        else:
+                            response.failure(f"Resposta inválida: {json.dumps(data)}")
+                    else:
+                        response.failure(f"Erro HTTP {response.status_code}")
+            except Exception as e:
+                self.environment.events.request_failure.fire(
+                    request_type="POST",
+                    name="/generate",
+                    response_time=0,
+                    response_length=0,
+                    exception=e,
+                )

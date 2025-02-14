@@ -3,15 +3,21 @@ kind: Ingress
 metadata:
   name: production-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false" # 
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
   ingressClassName: nginx
   rules:
-    - http:  # Lista de regras (cada item começa com "-")
+    - http:
         paths:
+          - path: /generate
+            pathType: Prefix
+            backend:
+              service:
+                name: inference-service
+                port:
+                  number: 6000
           - path: /
             pathType: Prefix
             backend:
@@ -19,5 +25,3 @@ spec:
                 name: api-service
                 port:
                   number: 8080
-
-                  

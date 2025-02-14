@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: promtail
+  labels:
+    app: promtail
+spec:
+  selector:
+    matchLabels:
+      app: promtail
+  template:
+    metadata:
+      labels:
+        app: promtail
+    spec:
+      serviceAccountName: promtail  # ServiceAccount com permissões RBAC
+      containers:
+        - name: promtail
+          image: grafana/promtail:latest
+          args:
+            - "-config.file=/etc/promtail/promtail.yml"
+          ports:
+            - containerPort: 9080
+          volumeMounts:
+            - name: promtail-config
+              mountPath: /etc/promtail
+            - name: storia-logs
+              mountPath: /var/log/storIA
+            - name: host-containers
+              mountPath: /var/log/containers
+            - name: host-pods
+              mountPath: /var/log/pods
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            readOnlyRootFilesystem: false
+      volumes:
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+        - name: storia-logs
+          hostPath:
+            path: /var/log/storIA
+            type: DirectoryOrCreate
+        - name: host-containers
+          hostPath:
+            path: /var/log/containers
+            type: Directory
+        - name: host-pods
+          hostPath:
+            path: /var/log/pods
+            type: Directory

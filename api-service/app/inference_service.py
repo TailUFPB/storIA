@@ -1,8 +1,16 @@
+import os
+# Para evitar os warnings do tokenizers
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 from flask import Flask, request, jsonify
 from app.story import Story_generator
 from app.logger import storia_logger
+from app.metrics import start_metrics  
 
 app = Flask(__name__)
+
+# Inicia a instrumentação de métricas
+start_metrics(app)
 
 # Carrega o modelo apenas uma vez quando o serviço inicia
 storia_logger.info("Carregando modelo no serviço de inferência...")

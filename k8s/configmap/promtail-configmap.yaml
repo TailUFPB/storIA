@@ -9,16 +9,18 @@ data:
       grpc_listen_port: 0
 
     positions:
-      filename: /var/log/positions.yaml
+      filename: /tmp/positions.yaml
 
     clients:
-      - url: http://loki:3100/loki/api/v1/push  # Endpoint do Loki
+      - url: http://loki:3100/loki/api/v1/push
 
     scrape_configs:
-      - job_name: storIA_logs 
+      - job_name: storIA-logs
         static_configs:
-          - targets: [localhost]
+          - targets:
+              - localhost
             labels:
               job: storIA
-              logger: storIA_logger
-              __path__: /var/log/storIA/*.log  # Caminho dos logs no container
+              __path__: /var/log/storIA/*.log
+        pipeline_stages:
+          - cri: {}  # Se os logs estiverem no formato CRI, esta etapa pode extrair metadados

@@ -42,9 +42,10 @@ spec:
             timeoutSeconds: 10
             failureThreshold: 3
           volumeMounts:
-            - name: logs-volume
-              mountPath: /var/log/storIA  # Mesmo caminho do Promtail
+            - name: storia-logs
+              mountPath: /var/log/storIA
       volumes:
-        - name: logs-volume
-          persistentVolumeClaim:
-            claimName: promtail-logs-pvc  # PVC compartilhado (Esse PVC é compartilhado com o Promtail para que ele possa coletar os logs desse diretório.)
+        - name: storia-logs
+          hostPath:
+            path: /var/log/storIA
+            type: DirectoryOrCreate
