@@ -14,6 +14,11 @@ spec:
       labels:
         app: worker
     spec:
+      initContainers:
+      - name: wait-before-start
+        image: busybox
+        command: ["sleep", "30"]  # Espera 30 segundos antes de iniciar o pod
+
       containers:
       - name: worker
         image: api-service:latest

@@ -38,6 +38,7 @@ def init_routes(app):
         # Processamento dos parâmetros
         data = request.form
         input_text = data.getlist('text[]')[0] if data.getlist('text[]') else None
+        storia_logger.info(f"Texto de entrada: {input_text}")
         size = data.getlist('length[]')[0] if data.getlist('length[]') else 100
         temperature = data.getlist('temperature[]')[0] if data.getlist('temperature[]') else 1.0
 
@@ -65,7 +66,7 @@ def init_routes(app):
         CACHE_MISSES.inc()
 
         # Enfileirar o job
-        job = q.enqueue(generate_story_job, input_text, size, temperature, job_timeout=600)
+        job = q.enqueue(generate_story_job, input_text, size, temperature, job_timeout=180)
         storia_logger.info(f"Requisição enfileirada com ID: {job.id}")
 
         # Retorna o job_id para que o front-end inicie o polling
@@ -78,12 +79,18 @@ def init_routes(app):
             if job.is_finished:
                 # Armazena o resultado no cache
                 redis_client.setex(generate_cache_key(job.args[0], job.args[1], job.args[2]), 3600, job.result)
+                storia_logger.info(f"Resultado armazenado em cache para chave: {generate_cache_key(job.args[0], job.args[1], job.args[2])}")
+                # Resultado da requisição
+                storia_logger.info(f"Requisição {job.result} finalizada")
                 return jsonify({"status": "finished", "result": job.result})
             elif job.is_queued:
+                storia_logger.info(f"Requisição {job_id} enfileirada")
                 return jsonify({"status": "queued"})
             elif job.is_started:
+                storia_logger.info(f"Requisição {job_id} em processamento")
                 return jsonify({"status": "processing"})
             else:
+                storia_logger.info(f"Requisição {job_id} com status desconhecido")
                 return jsonify({"status": job.get_status()})
         except Exception as e:
             storia_logger.error(f"Erro ao consultar a Requisição {job_id}: {e}")

@@ -25,6 +25,8 @@ def generate():
     temperature = data.get("temperature", 1.0)
     try:
         story = generator.generate_story(input_text, int(size), float(temperature))
+        # História gerada
+        storia_logger.info(f"História gerada: {story}")
         return jsonify({"story": story})
     except Exception as e:
         storia_logger.error(f"Erro na geração de história: {e}")

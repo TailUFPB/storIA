@@ -18,7 +18,7 @@ data:
     ]
 
     class ApiUser(HttpUser):
-        wait_time = between(0, 0.1)  # Evita grandes intervalos entre requisições
+        wait_time = between(10, 10)  # Tempo entre uma nova requisição após o termino da atual
         host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx
 
         @task
@@ -27,8 +27,8 @@ data:
             # Envia os dados como formulário, conforme esperado pela rota /submit
             form_data = {
                 "text[]": prompt,
-                "length[]": "100",         # Lembrando que o views.py converte para int
-                "temperature[]": "0.7"       # e para float, respectivamente
+                "length[]": "50",         # Lembrando que o views.py converte para int
+                "temperature[]": "1.0"       # e para float, respectivamente
             }
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             
@@ -51,8 +51,8 @@ data:
                         return
 
                     # Polling simples com limite de tentativas
-                    for _ in range(10):
-                        poll_response = self.client.get(f"/result/{job_id}", timeout=600)
+                    for _ in range(5): # Quantidade de verificações pra uma resposta
+                        poll_response = self.client.get(f"/result/{job_id}", timeout=180)
                         try:
                             poll_data = poll_response.json()
                         except Exception as e:
@@ -61,7 +61,7 @@ data:
                         if poll_data.get("status") == "finished":
                             response.success()
                             return
-                        time.sleep(1)
+                        time.sleep(60) # Tempo de espera entre as verificações
                     response.failure("Job não finalizado dentro do tempo de polling")
                 else:
                     response.failure(f"Erro HTTP {response.status_code}")
