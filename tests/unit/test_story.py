@@ -1,18 +1,26 @@
+import os
+import sys
+
+# Adiciona o caminho absoluto para a pasta api-service (subindo dois níveis)
+folderpath = os.path.join(os.path.dirname(__file__), "../../api-service")
+sys.path.insert(0, os.path.abspath(folderpath))
+
+
 import pytest
 from unittest.mock import patch
-from app.story import StoryGenerator
+from app.story import Story_generator  # Ajustado para o nome correto da classe
 
 @pytest.fixture
 def story_generator_fixture():
     """
-    Cria uma instância de StoryGenerator, mas evita carregar o modelo real,
+    Cria uma instância de Story_generator, mas evita carregar o modelo real,
     pois para testar apenas 'clean_text' não precisamos baixar/puxar o modelo.
     """
     with patch("app.story.AutoModelForCausalLM.from_pretrained"), \
          patch("app.story.AutoTokenizer.from_pretrained"), \
          patch("app.story.pipeline"):
         
-        story_generator = StoryGenerator()
+        story_generator = Story_generator()
         return story_generator
 
 def test_clean_text_remove_trailing_spaces(story_generator_fixture):
@@ -30,8 +38,6 @@ def test_clean_text_converts_to_lowercase(story_generator_fixture):
     Verifica se o método clean_text converte o texto para minúsculo.
     """
     input_text = "TEXTO EM MAIÚSCULAS  "
-    # Para ficar claro, após remover trailing spaces, deve ficar "TEXTO EM MAIÚSCULAS"
-    # e então converter para minúsculo -> "texto em maiúsculas"
     expected = "texto em maiúsculas"
     result = story_generator_fixture.clean_text(input_text)
     assert result == expected, f"Esperado '{expected}', mas obteve '{result}'"
