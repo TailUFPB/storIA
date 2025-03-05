@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api_service
+  template:
+    metadata:
+      labels:
+        app: api_service
+    spec:
+      containers:
+        - name: api
+          image: api_service:latest 
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "500Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /var/log/storIA  # Mesmo caminho do Promtail
+      volumes:
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: promtail-logs-pvc  # PVC compartilhado (Esse PVC é compartilhado com o Promtail para que ele possa coletar os logs desse diretório.)

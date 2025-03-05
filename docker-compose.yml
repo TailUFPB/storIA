@@ -1,0 +1,27 @@
+# compose para rodar os contêineres de uma vez: api-service, redis, worker, inference_service
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  worker:
+    build: .
+    command: ["rq", "worker"]
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+
+  inference-service:
+    build: ./api_service/
+    ports:
+      - 6000:6000

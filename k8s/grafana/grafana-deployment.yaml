@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:latest
+        ports:
+        - containerPort: 3000
+        env:  # Credenciais via Secret
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: grafana-auth  # Secret criado anteriormente
+                key: GF_SECURITY_ADMIN_USER
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: grafana-auth
+                key: GF_SECURITY_ADMIN_PASSWORD
+          # Configurações de métricas
+          - name: GF_METRICS_ENABLED
+            value: "true"
+          - name: GF_METRICS_ENABLE_BASIC_AUTH
+            value: "false"
+          - name: GF_METRICS_HTTP_PORT
+            value: "3000"
+        volumeMounts:
+        - name: grafana-config  # ConfigMap com a fonte de dados do Loki
+          mountPath: /etc/grafana/provisioning/datasources/
+      volumes:
+      - name: grafana-config
+        configMap:
+          name: grafana-config  # ConfigMap com o YAML do Loki
+          items:  # Especifique quais chaves do ConfigMap serão incluídas
+            - key: loki-datasource.yaml
+              path: loki-datasource.yaml  # Nome do arquivo no diretório de destino

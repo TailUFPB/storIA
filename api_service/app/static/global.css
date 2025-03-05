@@ -1,0 +1,133 @@
+* {  /*o sinal de * significa que todos os elementos vão receber esse estilo de CSS*/
+    padding: 0;
+    margin:0;
+    box-sizing: border-box;
+}
+
+:root{ /*Definir as variaveis de cores*/
+    --white: #fff;
+    --background: #F2F3F5;
+    --gray-line: #DCDDE0;
+    --text: #655555;
+    --text-highlight: #B3B9FF;
+    --title: #2E384D;
+    --red: #E83F5B;
+    --green: #4CD62B;
+    --blue: #5965E0;
+    --blue-dark: #4953B8;
+    --blue-twitter: #2AA9E0;
+}
+
+body{
+    background: var(--background);
+    color: var(--text);
+}
+
+input, textarea, button{
+    font: 400 16px "Inter", sans-serif;
+}
+h1{
+    font: 400 83px, "Varela Round", sans-serif;
+    color: var(--background);
+}
+
+button{
+    cursor: pointer; /*altera o cursor ao mover sobre o botao*/
+}
+
+a{
+    color:inherit; /*Vai herdar aos links a cor do container dos links, para manter a mesma cor do texto*/
+    text-decoration: none;
+    
+}
+
+
+.centralize{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+.spanConfig{
+    margin-left: 0;
+}
+
+.txtContainer{
+    width: 100%;
+    height: 100vh;
+    margin-top: 4rem;
+}
+
+.txtAreaContainer{
+    width: 100%;
+    height: 85%;
+    margin-top: 4rem;
+}
+
+.formControl:hover{
+    border-bottom: none;
+    transition: 0.5s;
+}
+
+.formControl:hover{
+    border-bottom: 1px solid black !important;
+
+}
+
+.no-border {
+    border: 0;
+    box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
+    background: var(--background);
+    font-size:xx-large;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+
+
+.txtAreaExt{
+
+    width: 100%;
+    height: 100%;
+
+}
+textarea { height: auto; font-family: "Lucida Console", "Courier New", monospace;}
+
+.txtAreaInt{
+
+    width: 100%;
+    height: 65vh;
+
+    
+}
+.txtArea{
+
+    -webkit-box-shadow: 2px 1px 9px -3px #000000; 
+    box-shadow: 2px 1px 9px -3px #000000;
+}
+.titleText{
+    width: 50%;
+    margin: auto;
+}
+
+.linkConfig{
+    border-bottom: 1px solid black;
+    color: #B3B9FF;
+}
+
+.carousel-container{
+    height: 50vh;
+    border-radius: 20px;
+}
+
+.carousel-img{
+    border-radius: 20px;
+}
+
+.img-config{
+    height: 20rem;
+}
+
+
+.socialTitle{
+    color:#2E384D;
+}

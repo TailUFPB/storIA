@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: promtail-logs-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath  # Usa o StorageClass padrão do cluster
+  resources:
+    requests:
+      storage: 1Gi  # Tamanho ajustável
