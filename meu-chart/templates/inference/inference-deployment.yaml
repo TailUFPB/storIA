@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference-deployment
+  labels:
+    app: inference
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.inference.replicas }}
+  selector:
+    matchLabels:
+      app: inference
+  template:
+    metadata:
+      labels:
+        app: inference
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: inference
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: {{ .Values.inference.command | toYaml | nindent 12 }}
+        ports:
+        - containerPort: {{ .Values.inference.port }}
+        resources:
+          {{- toYaml .Values.inference.resources | nindent 12 }}
+        volumeMounts:
+          - name: storia-logs
+            mountPath: {{ .Values.volumes.hostPath }}
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: {{ .Values.volumes.hostPath }}
+            type: DirectoryOrCreate

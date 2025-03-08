@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      initContainers:
+      - name: wait-before-start
+        image: {{ .Values.worker.initContainer.image | quote }}
+        command: 
+          - "sleep"
+          - {{ .Values.worker.initContainer.delay | quote }}  # Correção crítica aqui
+      containers:
+      - name: worker
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: {{ .Values.worker.command | toYaml | nindent 12 }}
+        resources:
+          {{- toYaml .Values.worker.resources | nindent 12 }}
+        volumeMounts:
+          - name: storia-logs
+            mountPath: {{ .Values.volumes.hostPath }}
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: {{ .Values.volumes.hostPath }}
+            type: DirectoryOrCreate

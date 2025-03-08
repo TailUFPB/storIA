@@ -1,0 +1,66 @@
+image:
+  repository: api-service  # Nome da sua imagem Docker
+  tag: latest             # Tag da imagem
+  pullPolicy: IfNotPresent
+
+api:
+  replicas: 1
+  port: 5000
+  servicePort: 8080
+  resources:
+    requests:
+      cpu: 200m
+      memory: 500Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
+inference:
+  replicas: 1
+  port: 6000
+  servicePort: 6000
+  serviceType: ClusterIP
+  command: ["python", "-m", "app.inference_service"]
+  resources:
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "3Gi"
+
+worker:
+  replicas: 1
+  command: ["python", "-m", "app.worker"]
+  initContainer:
+    image: "busybox"  # Adicione aspas
+    delay: "30"       # Valor como string
+  resources:
+    requests:
+      cpu: 500m
+      memory: 500Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  env:
+    - name: REDIS_HOST
+      value: "redis-master"
+    - name: REDIS_PORT
+      value: "6379"
+
+autoscaling:
+  api:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 70
+  inference:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 100
+  worker:
+    enabled: true
+
+volumes:
+  hostPath: /var/log/storIA

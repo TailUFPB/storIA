@@ -1,0 +1,2 @@
+loadtest:
+  locust_locustfile_configmap: locust-config
