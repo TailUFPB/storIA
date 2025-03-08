@@ -1,3 +1,10 @@
+import os
+import sys
+
+# Adiciona o caminho absoluto para a pasta api-service (subindo dois níveis)
+folderpath = os.path.join(os.path.dirname(__file__), "../../api-service")
+sys.path.insert(0, os.path.abspath(folderpath))
+
 import pytest
 from unittest.mock import patch
 
