@@ -1,10 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inference-deployment
+  name: {{ include "meu-chart.fullname" . }}-inference  # Nome único
+  namespace: {{ .Release.Namespace }}
   labels:
     app: inference
-    {{- include "common.labels" . | nindent 4 }}
+    {{- include "meu-chart.labels" . | nindent 4 }}  # Nome correto do template
+
 spec:
   replicas: {{ .Values.inference.replicas }}
   selector:
@@ -14,7 +16,7 @@ spec:
     metadata:
       labels:
         app: inference
-        {{- include "common.labels" . | nindent 8 }}
+        {{- include "meu-chart.labels" . | nindent 8 }}
     spec:
       containers:
       - name: inference

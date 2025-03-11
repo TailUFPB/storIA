@@ -2,7 +2,7 @@ promtail:
   enabled: true
   config:
     clients:
-      - url: http://loki:3100/loki/api/v1/push
+      - url: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push  # Usar nome do release
   extraVolumes:
     - name: storia-logs
       persistentVolumeClaim:
@@ -10,6 +10,15 @@ promtail:
   extraVolumeMounts:
     - name: storia-logs
       mountPath: /var/log/storIA
+
+
+loki:
+  auth_enabled: true  # Ativar em produção
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
 
 loki:
   enabled: true

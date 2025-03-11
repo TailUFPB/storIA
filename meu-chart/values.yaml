@@ -62,5 +62,25 @@ autoscaling:
   worker:
     enabled: true
 
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: storia.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+
+
 volumes:
-  hostPath: /var/log/storIA
+  - name: storia-logs
+    persistentVolumeClaim:
+      claimName: storia-logs  # Deve ser criado separadamente
+
+
+
+
+

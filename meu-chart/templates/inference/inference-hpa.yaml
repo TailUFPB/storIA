@@ -2,14 +2,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: inference-hpa
+  name: {{ include "meu-chart.fullname" . }}-inference-hpa
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "common.labels" . | nindent 4 }}
+    {{- include "meu-chart.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: inference-deployment
+    name: {{ include "meu-chart.fullname" . }}-inference
   minReplicas: {{ .Values.autoscaling.inference.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.inference.maxReplicas }}
   metrics:

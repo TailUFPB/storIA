@@ -24,3 +24,12 @@ datasources:
         type: loki
         access: proxy
         url: "http://loki:3100"
+
+# Corrija as credenciais SMTP usando Secrets
+smtp:
+  existingSecret: grafana-smtp  # Criar secret separado
+
+# Adicione persistência
+persistence:
+  enabled: true
+  existingClaim: grafana-storage

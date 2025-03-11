@@ -1,5 +1,18 @@
 apiVersion: v2
-name: meu-app
+name: meu-chart  # Alterar para combinar com o nome da pasta
 description: Aplicação completa com API, Inference e Worker
 version: 0.1.0
 appVersion: "1.0"
+
+# Adicione estas seções:
+dependencies:
+  - name: loki-stack
+    version: 2.10.2
+    repository: https://grafana.github.io/helm-charts
+  - name: prometheus
+    version: 27.5.1
+    repository: https://prometheus-community.github.io/helm-charts
+keywords:
+  - monitoring
+  - logging
+  - ai

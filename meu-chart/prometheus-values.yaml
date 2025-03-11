@@ -21,3 +21,15 @@ serverFiles:
       - job_name: 'promtail'
         static_configs:
           - targets: ['promtail:9080']
+
+# Adicione alertas e ajuste targets
+alertmanager:
+  enabled: true
+
+serverFiles:
+  alerting_rules.yml: |-  # Adicionar regras de alerta
+    groups:
+    - name: storIA-alerts
+      rules:
+      - alert: HighAPIErrorRate
+        expr: rate(api_errors_total[5m]) > 0.1

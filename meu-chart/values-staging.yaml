@@ -1,0 +1,30 @@
+environment: staging
+replicaCount: 1
+image:
+  repository: seu-registry/storia-api
+  tag: staging
+  pullPolicy: Always
+
+ingress:
+  hosts:
+    - host: staging.storia.example.com
+
+resources:
+  limits:
+    memory: 512Mi
+
+# Adicione tolerâncias para testes
+nodeSelector:
+  environment: staging
+
+tolerations:
+  - key: "environment"
+    operator: "Equal"
+    value: "staging"
+    effect: "NoSchedule"
+
+# Configure recursos menores
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi

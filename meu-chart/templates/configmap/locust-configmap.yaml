@@ -1,7 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: locust-config
+    name: {{ .Release.Name }}-locust-config  # Nome único
+    namespace: {{ .Release.Namespace }}
+  
+  
 data:
   locustfile.py: |
     from locust import HttpUser, task, between
@@ -19,7 +22,7 @@ data:
 
     class ApiUser(HttpUser):
         wait_time = between(10, 10)  # Tempo entre uma nova requisição após o termino da atual
-        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx
+        host: "http://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.cluster.local"  # Nome dinâmico
 
         @task
         def generate_story(self):

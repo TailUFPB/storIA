@@ -2,12 +2,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: api-service-hpa
+  name: {{ include "meu-chart.fullname" . }}-api-hpa  # Nome único por release
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
+    name: {{ include "meu-chart.fullname" . }}-api  # Referência correta
     apiVersion: apps/v1
     kind: Deployment
-    name: api-deployment
   minReplicas: {{ .Values.autoscaling.api.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.api.maxReplicas }}
   metrics:
