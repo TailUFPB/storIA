@@ -12,7 +12,7 @@ def setup_logger():
     )
 
     # Criação do diretório de logs (garante que o diretório exista)
-    log_directory = "/var/log/storIA"
+    log_directory = "/var/log/storia"
     os.makedirs(log_directory, exist_ok=True)
     log_file = os.path.join(log_directory, "storia.log")
 

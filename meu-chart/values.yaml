@@ -14,11 +14,9 @@ api:
     limits:
       cpu: 1
       memory: 1Gi
-  env:
-    - name: REDIS_HOST
-      value: "redis-master"
-    - name: REDIS_PORT
-      value: "6379"
+  env:  
+    redisHost: "redis-master" 
+    redisPort: "6379"
 
 inference:
   replicas: 1
@@ -73,7 +71,7 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-    - host: storia.example.com
+    - host: localhost
       paths:
         - path: /
           pathType: Prefix

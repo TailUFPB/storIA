@@ -20,9 +20,8 @@ spec:
         ports:
           - containerPort: {{ .Values.api.port }}
         env:
-          # Ajuste para usar valores do seu values.yaml (opcional):
           - name: REDIS_HOST
-            value: "redis-master"
+            value: "storia-staging-redis-master.staging.svc.cluster.local"  # FQDN
           - name: REDIS_PORT
             value: "6379"
         resources:
@@ -30,19 +29,19 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: {{ .Values.api.port }}
+            port: 5000
           initialDelaySeconds: 30
           periodSeconds: 20
         readinessProbe:
           httpGet:
             path: /health
-            port: {{ .Values.api.port }}
+            port: 5000
           initialDelaySeconds: 30
           periodSeconds: 20
         volumeMounts:
           - name: storia-logs
-            mountPath: {{ .Values.volumes.hostPath }}
+            mountPath: /var/log/storia 
       volumes:
       - name: storia-logs
         persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-storia-logs
+          claimName: storia-logs
