@@ -11,6 +11,9 @@ RUN pip install --no-cache-dir --retries 5 --timeout 100 -r requirements.txt
 # Instalar Gunicorn
 RUN pip install gunicorn
 
+# Instalar flask-limiter
+RUN pip install flask-limiter
+
 # Copiar o código da API
 COPY /api_service/app/ ./app
 COPY /api_service/cert.pem .
