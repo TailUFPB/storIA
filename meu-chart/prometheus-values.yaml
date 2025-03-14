@@ -1,35 +1,39 @@
 server:
-  # Ativa o uso de volume persistente e utiliza o PVC já criado (prometheus-storage)
   persistentVolume:
     enabled: true
-    existingClaim: prometheus-storage
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: standard
 
 serverFiles:
-  prometheus.yml: |-
+  prometheus.yml:
     global:
-      scrape_interval: 15s
+      scrape_interval: "15s"
     scrape_configs:
-      - job_name: 'api'
+      - job_name: "api"
         static_configs:
-          - targets: ['api-service:8000']
-      - job_name: 'redis'
+          - targets: ["api-service:8000"]
+      - job_name: "redis"
         static_configs:
-          - targets: ['redis-exporter:9121']
-      - job_name: 'loki'
+          - targets: ["redis-exporter:9121"]
+      - job_name: "loki"
         static_configs:
-          - targets: ['loki:3100']
-      - job_name: 'promtail'
+          - targets: ["loki:3100"]
+      - job_name: "promtail"
         static_configs:
-          - targets: ['promtail:9080']
+          - targets: ["promtail:9080"]
+  alerting_rules.yml:
+    groups:
+      - name: "storIA-alerts"
+        rules:
+          - alert: "HighAPIErrorRate"
+            expr: "rate(api_errors_total[5m]) > 0.1"
+            for: "5m"
+            labels:
+              severity: "warning"
+            annotations:
+              summary: "API error rate is high"
 
-# Adicione alertas e ajuste targets
 alertmanager:
   enabled: true
-
-serverFiles:
-  alerting_rules.yml: |-  # Adicionar regras de alerta
-    groups:
-    - name: storIA-alerts
-      rules:
-      - alert: HighAPIErrorRate
-        expr: rate(api_errors_total[5m]) > 0.1

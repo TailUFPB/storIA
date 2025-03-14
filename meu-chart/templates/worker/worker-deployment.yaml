@@ -20,24 +20,34 @@ spec:
       initContainers:
       - name: wait-before-start
         image: {{ .Values.worker.initContainer.image | quote }}
-        command: 
+        command:
           - "sleep"
-          - {{ .Values.worker.initContainer.delay | quote }}  # Correção crítica aqui
-      - securityContext:
-          readOnlyRootFilesystem: true
-          allowPrivilegeEscalation: false     
+          - {{ .Values.worker.initContainer.delay | quote }}
+
+      # Caso você deseje um securityContext para todo o pod,
+      # mova esse bloco acima de containers:
+      securityContext:
+        runAsNonRoot: true
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: false
+
       containers:
       - name: worker
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: {{ .Values.worker.command | toYaml | nindent 12 }}
+        command: {{ .Values.worker.command | toYaml | nindent 8 }}
         resources:
-          {{- toYaml .Values.worker.resources | nindent 12 }}
+          {{- toYaml .Values.worker.resources | nindent 10 }}
+        {{- if .Values.volumes.hostPath }}
         volumeMounts:
           - name: storia-logs
             mountPath: {{ .Values.volumes.hostPath }}
+        {{- end }}
+
+      {{- if .Values.volumes.hostPath }}
       volumes:
-        - name: storia-logs
-          hostPath:
-            path: {{ .Values.volumes.hostPath }}
-            type: DirectoryOrCreate
+      - name: storia-logs
+        hostPath:
+          path: {{ .Values.volumes.hostPath }}
+          type: DirectoryOrCreate
+      {{- end }}

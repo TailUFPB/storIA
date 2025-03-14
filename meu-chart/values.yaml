@@ -1,6 +1,6 @@
 image:
-  repository: api-service  # Nome da sua imagem Docker
-  tag: latest             # Tag da imagem
+  repository: api-service
+  tag: latest
   pullPolicy: IfNotPresent
 
 api:
@@ -14,6 +14,11 @@ api:
     limits:
       cpu: 1
       memory: 1Gi
+  env:
+    - name: REDIS_HOST
+      value: "redis-master"
+    - name: REDIS_PORT
+      value: "6379"
 
 inference:
   replicas: 1
@@ -33,8 +38,8 @@ worker:
   replicas: 1
   command: ["python", "-m", "app.worker"]
   initContainer:
-    image: "busybox"  # Adicione aspas
-    delay: "30"       # Valor como string
+    image: "busybox"
+    delay: "30"
   resources:
     requests:
       cpu: 500m
@@ -73,14 +78,7 @@ ingress:
         - path: /
           pathType: Prefix
 
-
-
 volumes:
   - name: storia-logs
     persistentVolumeClaim:
-      claimName: storia-logs  # Deve ser criado separadamente
-
-
-
-
-
+      claimName: storia-logs

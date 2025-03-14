@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "meu-chart.fullname" . }}-api-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+    {{- if .Values.ingress.annotations }}
+    {{ toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+    - host: {{ (index .Values.ingress.hosts 0).host }}
+      http:
+        paths:
+          - path: {{ (index (index .Values.ingress.hosts 0).paths 0).path }}
+            pathType: {{ (index (index .Values.ingress.hosts 0).paths 0).pathType }}
+            backend:
+              service:
+                name: {{ include "meu-chart.fullname" . }}-api-svc
+                port:
+                  number: {{ .Values.api.servicePort }}
+{{- end }}

@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "meu-chart.fullname" . }}-api  # Usar helper function
-  namespace: {{ .Release.Namespace }}  # Adicionar namespace
-
+  name: {{ include "meu-chart.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.api.replicas }}
   selector:
@@ -15,29 +14,35 @@ spec:
         app: api-service
     spec:
       containers:
-        - name: api
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.api.port }}
-          resources:
-            {{- toYaml .Values.api.resources | nindent 12 }}
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: {{ .Values.api.port }}
-            initialDelaySeconds: 30
-            periodSeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: {{ .Values.api.port }}
-            initialDelaySeconds: 30
-            periodSeconds: 20
-          volumeMounts:
-            - name: storia-logs
-              mountPath: {{ .Values.volumes.hostPath }}
+      - name: api
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.api.port }}
+        env:
+          # Ajuste para usar valores do seu values.yaml (opcional):
+          - name: REDIS_HOST
+            value: "redis-master"
+          - name: REDIS_PORT
+            value: "6379"
+        resources:
+          {{- toYaml .Values.api.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.api.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.api.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        volumeMounts:
+          - name: storia-logs
+            mountPath: {{ .Values.volumes.hostPath }}
       volumes:
-        - name: storia-logs
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-storia-logs  # Usar PVC ao invés de hostPath
+      - name: storia-logs
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-storia-logs

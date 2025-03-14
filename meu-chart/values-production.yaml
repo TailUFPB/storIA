@@ -1,5 +1,6 @@
 environment: production
 replicaCount: 3
+
 image:
   repository: seu-registry/storia-api
   tag: v1.0.0
@@ -9,21 +10,37 @@ autoscaling:
   enabled: true
   minReplicas: 3
   maxReplicas: 10
-
-# Complete com configurações específicas
-autoscaling:
-  api:
-    targetCPU: 80
-  inference:
-    targetCPU: 90
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 90
 
 resources:
+  requests:
+    cpu: "1"
+    memory: 2Gi
   limits:
     cpu: "2"
     memory: 4Gi
 
 ingress:
+  enabled: true
+  className: nginx
   tls:
     - secretName: storia-tls
       hosts:
         - storia.example.com
+  hosts:
+    - host: storia.example.com
+      paths:
+        - path: /
+          pathType: Prefix

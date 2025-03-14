@@ -14,10 +14,10 @@ spec:
   minReplicas: {{ .Values.autoscaling.inference.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.inference.maxReplicas }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.autoscaling.inference.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.inference.targetCPU }}
 {{- end }}

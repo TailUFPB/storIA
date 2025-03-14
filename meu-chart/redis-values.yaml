@@ -1,0 +1,43 @@
+# Configuração do Redis
+redis:
+  replicaCount: 1
+  image:
+    repository: redis
+    tag: "6.2-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 6379
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  livenessProbe:
+    tcpSocket:
+      port: 6379
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    tcpSocket:
+      port: 6379
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+# Configuração do Redis Exporter
+redisExporter:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: oliver006/redis_exporter
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  args:
+    - "--redis.addr=redis:6379"
+  service:
+    type: ClusterIP
+    port: 9121

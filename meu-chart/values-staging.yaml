@@ -1,19 +1,27 @@
 environment: staging
 replicaCount: 1
+
 image:
   repository: seu-registry/storia-api
   tag: staging
   pullPolicy: Always
 
 ingress:
+  enabled: true
+  className: nginx
   hosts:
     - host: staging.storia.example.com
+      paths:
+        - path: /
+          pathType: Prefix
 
 resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
   limits:
     memory: 512Mi
 
-# Adicione tolerâncias para testes
 nodeSelector:
   environment: staging
 
@@ -22,9 +30,3 @@ tolerations:
     operator: "Equal"
     value: "staging"
     effect: "NoSchedule"
-
-# Configure recursos menores
-resources:
-  requests:
-    cpu: 100m
-    memory: 256Mi

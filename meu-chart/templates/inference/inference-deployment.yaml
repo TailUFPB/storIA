@@ -1,12 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "meu-chart.fullname" . }}-inference  # Nome único
+  name: {{ include "meu-chart.fullname" . }}-inference
   namespace: {{ .Release.Namespace }}
   labels:
     app: inference
-    {{- include "meu-chart.labels" . | nindent 4 }}  # Nome correto do template
-
+    {{- include "meu-chart.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.inference.replicas }}
   selector:
@@ -22,16 +21,16 @@ spec:
       - name: inference
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: {{ .Values.inference.command | toYaml | nindent 12 }}
+        command: {{ .Values.inference.command | toYaml | nindent 8 }}
         ports:
-        - containerPort: {{ .Values.inference.port }}
+          - containerPort: {{ .Values.inference.port }}
         resources:
-          {{- toYaml .Values.inference.resources | nindent 12 }}
+          {{- toYaml .Values.inference.resources | nindent 10 }}
         volumeMounts:
           - name: storia-logs
             mountPath: {{ .Values.volumes.hostPath }}
       volumes:
-        - name: storia-logs
-          hostPath:
-            path: {{ .Values.volumes.hostPath }}
-            type: DirectoryOrCreate
+      - name: storia-logs
+        hostPath:
+          path: {{ .Values.volumes.hostPath }}
+          type: DirectoryOrCreate

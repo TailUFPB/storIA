@@ -1,9 +1,10 @@
 admin:
-  existingSecret: "grafana-auth"  # Utiliza o Secret já existente para as credenciais
+  existingSecret: "grafana-auth"
+  user: "TAIL"
+  password: "TAIL123"
 
 grafana:
   ini:
-    # Essas configurações serão injetadas no arquivo grafana.ini
     plugins:
       allow_loading_unsigned_plugins: true
     smtp:
@@ -15,21 +16,11 @@ grafana:
       from_name: "Grafana Alerts"
       starttls_policy: "yes"
 
-datasources:
-  # Define o datasource do Loki diretamente
-  datasources.yaml:
-    apiVersion: 1
-    datasources:
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
       - name: Loki
         type: loki
         access: proxy
         url: "http://loki:3100"
-
-# Corrija as credenciais SMTP usando Secrets
-smtp:
-  existingSecret: grafana-smtp  # Criar secret separado
-
-# Adicione persistência
-persistence:
-  enabled: true
-  existingClaim: grafana-storage

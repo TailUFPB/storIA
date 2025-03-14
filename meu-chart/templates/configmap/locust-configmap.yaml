@@ -1,17 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: {{ .Release.Name }}-locust-config  # Nome único
-    namespace: {{ .Release.Namespace }}
-  
-  
+  name: {{ .Release.Name }}-locust-config
+  namespace: {{ .Release.Namespace }}
 data:
   locustfile.py: |
     from locust import HttpUser, task, between
     import time
     import random
     import json
-    # Lista de prompts para os testes
+    
     PROMPTS = [
         "A shadow lurking in the basement",
         "Whispers in the abandoned house",
@@ -21,17 +19,17 @@ data:
     ]
 
     class ApiUser(HttpUser):
-        wait_time = between(10, 10)  # Tempo entre uma nova requisição após o termino da atual
-        host: "http://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.cluster.local"  # Nome dinâmico
+        wait_time = between(10, 10)
+        # Ajuste aqui para o serviço correto ou para Ingress:
+        host = "http://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.cluster.local"
 
         @task
         def generate_story(self):
             prompt = random.choice(PROMPTS)
-            # Envia os dados como formulário, conforme esperado pela rota /submit
             form_data = {
                 "text[]": prompt,
-                "length[]": "50",         # Lembrando que o views.py converte para int
-                "temperature[]": "1.0"       # e para float, respectivamente
+                "length[]": "50",
+                "temperature[]": "1.0"
             }
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
             
@@ -42,29 +40,29 @@ data:
                     except Exception as e:
                         response.failure(f"Erro ao interpretar resposta JSON: {e}")
                         return
-                    # Se o job já estiver finalizado, não precisa de polling
+                    # Se o job já estiver finalizado, sucesso
                     if res_data.get("job_finished", False):
                         response.success()
                         return
 
-                    # Caso contrário, obtemos o job_id e fazemos polling na rota /result/<job_id>
                     job_id = res_data.get("job_id")
                     if not job_id:
                         response.failure("Job ID não retornado")
                         return
 
-                    # Polling simples com limite de tentativas
-                    for _ in range(5): # Quantidade de verificações pra uma resposta
+                    # Polling de 5 tentativas
+                    for _ in range(5):
                         poll_response = self.client.get(f"/result/{job_id}", timeout=180)
                         try:
                             poll_data = poll_response.json()
                         except Exception as e:
                             response.failure(f"Erro ao interpretar polling JSON: {e}")
                             return
+
                         if poll_data.get("status") == "finished":
                             response.success()
                             return
-                        time.sleep(60) # Tempo de espera entre as verificações
+                        time.sleep(60)
                     response.failure("Job não finalizado dentro do tempo de polling")
                 else:
                     response.failure(f"Erro HTTP {response.status_code}")
