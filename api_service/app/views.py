@@ -46,7 +46,7 @@ def init_routes(app):
             temperature = float(temperature)
 
             # validação dos inputs
-            if (type(input_text) != type('aaa')) or (len(input_text) < 6) or (len(input_text) > 150):
+            if (type(input_text) != type('aaa')) or (len(input_text) < 2) or (len(input_text) > 150):
                 raise
             if (type(size) != type(1)) or (size < 20) or (size > 500):
                 raise
