@@ -9,7 +9,7 @@ apiService:
   replicaCount: 1
   containerPort: 5000
   image:
-    repository: "seu-usuario/api-service"
+    repository: "tailmlops/api-service"
     tag: "latest"
     pullPolicy: IfNotPresent
   resources:
@@ -51,7 +51,7 @@ inference:
   replicaCount: 1
   containerPort: 6000
   image:
-    repository: "seu-usuario/api-service"
+    repository: "tailmlops/api-service"
     tag: "latest"
     pullPolicy: IfNotPresent
   command:
@@ -85,7 +85,7 @@ worker:
       - "sleep"
       - "30"
   image:
-    repository: "seu-usuario/api-service"
+    repository: "tailmlops/api-service"
     tag: "latest"
     pullPolicy: IfNotPresent
   command:
