@@ -1,0 +1,41 @@
+{{- /* templates/worker-deployment.yaml */ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "storia.fullname" . }}-worker
+  labels:
+    app: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      initContainers:
+        - name: wait-before-start
+          image: {{ .Values.worker.initContainer.image }}
+          command: {{ toJson .Values.worker.initContainer.command }}
+      containers:
+        - name: worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          command: {{ toJson .Values.worker.command }}
+          resources:
+            requests:
+              memory: "{{ .Values.worker.resources.requests.memory }}"
+              cpu: "{{ .Values.worker.resources.requests.cpu }}"
+            limits:
+              memory: "{{ .Values.worker.resources.limits.memory }}"
+              cpu: "{{ .Values.worker.resources.limits.cpu }}"
+          volumeMounts:
+            - name: storia-logs
+              mountPath: {{ .Values.worker.volume.mountPath | quote }}
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: {{ .Values.worker.volume.hostPath | quote }}
+            type: {{ .Values.worker.volume.type | quote }}

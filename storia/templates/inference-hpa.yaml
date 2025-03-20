@@ -1,0 +1,19 @@
+{{- /* templates/inference-hpa.yaml */ -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "storia.fullname" . }}-inference-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "storia.fullname" . }}-inference
+  minReplicas: {{ .Values.inference.hpa.minReplicas }}
+  maxReplicas: {{ .Values.inference.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.inference.hpa.averageUtilization }}

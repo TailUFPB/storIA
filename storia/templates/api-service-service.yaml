@@ -1,0 +1,13 @@
+{{- /* templates/api-service-service.yaml */ -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "storia.fullname" . }}-api-svc
+spec:
+  selector:
+    app: {{ .Values.apiService.name | default "api-service" }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.apiService.service.port }}
+      targetPort: {{ .Values.apiService.containerPort }}
+  type: {{ .Values.apiService.service.type | default "ClusterIP" }}

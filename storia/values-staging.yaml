@@ -1,0 +1,11 @@
+apiService:
+  image:
+    tag: "staging"
+
+inference:
+  image:
+    tag: "staging"
+
+worker:
+  image:
+    tag: "staging"

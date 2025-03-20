@@ -1,0 +1,13 @@
+{{- /* templates/inference-service.yaml */ -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "storia.fullname" . }}-inference-svc
+spec:
+  selector:
+    app: {{ .Values.inference.name | default "inference" }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.inference.service.port }}
+      targetPort: {{ .Values.inference.containerPort }}
+  type: {{ .Values.inference.service.type | default "ClusterIP" }}

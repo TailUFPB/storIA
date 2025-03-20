@@ -1,0 +1,39 @@
+{{- /* templates/inference-deployment.yaml */ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "storia.fullname" . }}-inference
+  labels:
+    app: inference
+spec:
+  replicas: {{ .Values.inference.replicaCount }}
+  selector:
+    matchLabels:
+      app: inference
+  template:
+    metadata:
+      labels:
+        app: inference
+    spec:
+      containers:
+      - name: inference
+        image: "{{ .Values.inference.image.repository }}:{{ .Values.inference.image.tag }}"
+        imagePullPolicy: {{ .Values.inference.image.pullPolicy }}
+        command: {{ toJson .Values.inference.command }}
+        ports:
+        - containerPort: {{ .Values.inference.containerPort }}
+        resources:
+          requests:
+            memory: "{{ .Values.inference.resources.requests.memory }}"
+            cpu: "{{ .Values.inference.resources.requests.cpu }}"
+          limits:
+            memory: "{{ .Values.inference.resources.limits.memory }}"
+            cpu: "{{ .Values.inference.resources.limits.cpu }}"
+        volumeMounts:
+          - name: storia-logs
+            mountPath: {{ .Values.inference.volume.mountPath | quote }}
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: {{ .Values.inference.volume.hostPath | quote }}
+            type: {{ .Values.inference.volume.type | quote }}

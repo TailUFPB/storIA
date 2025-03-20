@@ -1,0 +1,54 @@
+{{- /* templates/api-service-deployment.yaml */ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "storia.fullname" . }}-api
+  labels:
+    app: {{ .Values.apiService.name | default "api-service" }}
+spec:
+  replicas: {{ .Values.apiService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apiService.name | default "api-service" }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apiService.name | default "api-service" }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag }}"
+          imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.apiService.containerPort }}
+          resources:
+            requests:
+              cpu: "{{ .Values.apiService.resources.requests.cpu }}"
+              memory: "{{ .Values.apiService.resources.requests.memory }}"
+            limits:
+              cpu: "{{ .Values.apiService.resources.limits.cpu }}"
+              memory: "{{ .Values.apiService.resources.limits.memory }}"
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.apiService.livenessProbe.httpGet.path | quote }}
+              port: {{ .Values.apiService.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.apiService.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apiService.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.apiService.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.apiService.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.apiService.readinessProbe.httpGet.path | quote }}
+              port: {{ .Values.apiService.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.apiService.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.apiService.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.apiService.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.apiService.readinessProbe.failureThreshold }}
+          volumeMounts:
+            - name: storia-logs
+              mountPath: {{ .Values.apiService.volume.mountPath | quote }}
+      volumes:
+        - name: storia-logs
+          hostPath:
+            path: {{ .Values.apiService.volume.hostPath | quote }}
+            type: {{ .Values.apiService.volume.type | quote }}

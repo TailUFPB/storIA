@@ -1,0 +1,115 @@
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automount: true
+
+apiService:
+  name: "api-service"
+  replicaCount: 1
+  containerPort: 5000
+  image:
+    repository: "seu-usuario/api-service"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "500Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+  livenessProbe:
+    httpGet:
+      path: "/health"
+      port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      path: "/health"
+      port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 10
+    failureThreshold: 3
+  volume:
+    mountPath: "/var/log/storIA"
+    hostPath: "/var/log/storIA"
+    type: "DirectoryOrCreate"
+  service:
+    port: 8080
+    type: "ClusterIP"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    averageUtilization: 70
+
+inference:
+  replicaCount: 1
+  containerPort: 6000
+  image:
+    repository: "seu-usuario/api-service"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  command:
+    - "python"
+    - "-m"
+    - "app.inference_service"
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "1"
+    limits:
+      memory: "3Gi"
+      cpu: "2"
+  volume:
+    mountPath: "/var/log/storIA"
+    hostPath: "/var/log/storIA"
+    type: "DirectoryOrCreate"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    averageUtilization: 100
+  service:
+    port: 6000
+    type: "ClusterIP"
+
+worker:
+  replicaCount: 1
+  initContainer:
+    image: "busybox"
+    command:
+      - "sleep"
+      - "30"
+  image:
+    repository: "seu-usuario/api-service"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  command:
+    - "python"
+    - "-m"
+    - "app.worker"
+  resources:
+    requests:
+      memory: "500Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+  volume:
+    mountPath: "/var/log/storIA"
+    hostPath: "/var/log/storIA"
+    type: "DirectoryOrCreate"
+
+ingress:
+  enabled: false
+  tls: false
+  hosts: []
+
+# Bloco top-level usado pelo template NOTES.txt
+service:
+  port: 8080
+  type: "ClusterIP"
