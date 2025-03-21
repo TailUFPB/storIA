@@ -14,7 +14,7 @@ apiService:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "200m"
+      cpu: "100m"
       memory: "500Mi"
     limits:
       cpu: "1"
@@ -61,10 +61,10 @@ inference:
   resources:
     requests:
       memory: "1Gi"
-      cpu: "1"
+      cpu: "500m"
     limits:
       memory: "3Gi"
-      cpu: "2"
+      cpu: "1"
   volume:
     mountPath: "/var/log/storIA"
     hostPath: "/var/log/storIA"

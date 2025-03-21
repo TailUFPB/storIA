@@ -1,18 +1,18 @@
 apiService:
-  replicaCount: 3
+  replicaCount: 1
   image:
     tag: "production"
 
 inference:
-  replicaCount: 2
+  replicaCount: 1
   image:
     tag: "production"
   hpa:
-    minReplicas: 2
+    minReplicas: 1
     maxReplicas: 10
     averageUtilization: 80
 
 worker:
-  replicaCount: 2
+  replicaCount: 1
   image:
     tag: "production"
