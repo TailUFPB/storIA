@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: production-ingress
+  name: staging-ingress
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -15,13 +15,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: inference-service
+                name: storia-staging-inference-svc
                 port:
                   number: 6000
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: api-service
+                name: storia-staging-api-svc
                 port:
                   number: 8080
