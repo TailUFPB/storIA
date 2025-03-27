@@ -22,7 +22,7 @@ spec:
       containers:
       - name: worker
         image: api-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ["python", "-m", "app.worker"]
         resources:
           requests:

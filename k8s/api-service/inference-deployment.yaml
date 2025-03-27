@@ -17,7 +17,7 @@ spec:
       containers:
       - name: inference
         image: api-service:latest  # imagem que contém o serviço de inferência
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ["python", "-m", "app.inference_service"]
         ports:
         - containerPort: 6000

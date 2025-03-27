@@ -15,7 +15,7 @@ spec:
       containers:
         - name: api
           image: api-service:latest 
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           resources:
