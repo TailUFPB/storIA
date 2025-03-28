@@ -3,11 +3,15 @@ kind: Ingress
 metadata:
   name: staging-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Para testar sem forçar HTTPS; se desejar HTTPS, configure TLS
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - staging.127.0.0.1.nip.io
+      secretName: staging-tls-secret
   rules:
     - host: staging.127.0.0.1.nip.io
       http:
