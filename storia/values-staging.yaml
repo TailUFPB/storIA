@@ -1,6 +1,11 @@
 apiService:
   image:
     tag: "staging"
+  env:
+    - name: REDIS_HOST
+      value: "redis"
+    - name: APP_REDIS_PORT
+      value: "6379"
 
 inference:
   image:
@@ -9,3 +14,8 @@ inference:
 worker:
   image:
     tag: "staging"
+  env:
+    - name: REDIS_HOST
+      value: "redis"  # Mesmo nome do serviço
+    - name: REDIS_PORT
+      value: "6379"

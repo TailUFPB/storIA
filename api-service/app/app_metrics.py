@@ -1,3 +1,8 @@
+"""
+Módulo de métricas da aplicação com Prometheus.
+Define contadores para requisições, erros, acertos e faltas no cache.
+"""
+
 from prometheus_client import Counter
 
 # --- Contadores Prometheus da Aplicação ---

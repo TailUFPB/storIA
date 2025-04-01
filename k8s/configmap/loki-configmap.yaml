@@ -49,7 +49,7 @@ data:
       reject_old_samples_max_age: 0
       retention_period: 720h
       retention_stream:
-        - selector: '{job="storIA"}'
+        - selector: '{job="storia"}'
           priority: 1
           period: 720h
 

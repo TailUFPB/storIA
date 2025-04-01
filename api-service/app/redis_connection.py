@@ -1,12 +1,14 @@
 import redis
 import sys
 from app.logger import storia_logger
+import os
 
-# Configuração e verificação da conexão com Redis
 try:
+    redis_host = os.environ.get("REDIS_HOST", "redis")
+    redis_port = int(os.environ.get("APP_REDIS_PORT", 6379))
     redis_client = redis.Redis(
-        host='redis',
-        port=6379,
+        host=redis_host,
+        port=redis_port,
         db=0,
         socket_connect_timeout=2,
         socket_timeout=2

@@ -1,8 +1,9 @@
+import os
 import requests
 from app.logger import storia_logger
 
-def generate_story_job(input_text, size, temperature):
-    inference_url = "http://storia-staging-inference-svc:6000/generate"  # ajuste conforme o hostname e porta do serviço de inferência
+def generate_story_job(input_text: str, size: int, temperature: float) -> str:
+    inference_url = os.environ.get("INFERENCE_URL", "http://storia-staging-inference-svc:6000/generate")
     payload = {
         "text": input_text,
         "size": size,

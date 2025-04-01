@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from app.views import init_routes
 from app.metrics import start_metrics
@@ -6,16 +7,18 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__, template_folder='templates')
 
-# Esses parâmetros indicam quantos valores de cada cabeçalho o ProxyFix deve confiar.
+# Configura o ProxyFix conforme necessário
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
-# Inicializar rotas e métricas
+# Inicializa as rotas e as métricas
 init_routes(app)
 start_metrics(app)
 
 if __name__ == "__main__":
     try:
         storia_logger.info("Iniciando a aplicação Flask")
-        app.run(host='0.0.0.0', port=5000)
+        host = os.environ.get("FLASK_HOST", "0.0.0.0")
+        port = int(os.environ.get("FLASK_PORT", 5000))
+        app.run(host=host, port=port)
     except Exception as e:
         storia_logger.error(f"Erro ao iniciar a aplicação Flask: {e}")

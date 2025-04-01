@@ -25,7 +25,7 @@ spec:
             - name: promtail-config
               mountPath: /etc/promtail
             - name: storia-logs
-              mountPath: /var/log/storIA
+              mountPath: /var/log/storia
             - name: host-containers
               mountPath: /var/log/containers
             - name: host-pods
@@ -40,7 +40,7 @@ spec:
             name: promtail-config
         - name: storia-logs
           hostPath:
-            path: /var/log/storIA
+            path: /var/log/storia
             type: DirectoryOrCreate
         - name: host-containers
           hostPath:

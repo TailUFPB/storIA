@@ -36,8 +36,8 @@ apiService:
     timeoutSeconds: 10
     failureThreshold: 3
   volume:
-    mountPath: "/var/log/storIA"
-    hostPath: "/var/log/storIA"
+    mountPath: "/var/log/storia"
+    hostPath: "/var/log/storia"
     type: "DirectoryOrCreate"
   service:
     port: 8080
@@ -66,8 +66,8 @@ inference:
       memory: "3Gi"
       cpu: "1"
   volume:
-    mountPath: "/var/log/storIA"
-    hostPath: "/var/log/storIA"
+    mountPath: "/var/log/storia"
+    hostPath: "/var/log/storia"
     type: "DirectoryOrCreate"
   hpa:
     minReplicas: 1
@@ -100,8 +100,8 @@ worker:
       memory: "1Gi"
       cpu: "1"
   volume:
-    mountPath: "/var/log/storIA"
-    hostPath: "/var/log/storIA"
+    mountPath: "/var/log/storia"
+    hostPath: "/var/log/storia"
     type: "DirectoryOrCreate"
 
 ingress:
