@@ -1,144 +1,121 @@
-import random
-<<<<<<< HEAD:api-service/app/story.py
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, set_seed
-from app.logger import storia_logger 
+import os
+import time
+from huggingface_hub import hf_hub_download
+from llama_cpp import Llama
+from logger import storia_logger 
 
 class StoryGenerator:
     def __init__(self):
-        self.model_path = "Felipehonorato/storIA"
+        self.repo_id = "TailMLOps/storIA"
+        self.model_file = "model/storIA_q5_k_s.gguf"
+        self.n_ctx = 2048
+        self.n_threads = max(1, os.cpu_count() - 2)
+        
         try:
-            storia_logger.info(f"Carregando o modelo a partir de {self.model_path}")
-            self.model = AutoModelForCausalLM.from_pretrained(self.model_path)
-            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-            self.model = self.model.to(self.device)
-
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-
-            set_seed(random.randint(0, 999))
-
-            self.writer = pipeline(
-                'text-generation',
-                model=self.model,
-                tokenizer=self.tokenizer,
-                device=0 if self.device == 'cuda' else -1
+            storia_logger.info(f"Baixando modelo {self.model_file} do repositório {self.repo_id}")
+            self.model_path = hf_hub_download(
+                repo_id=self.repo_id,
+                filename=self.model_file,
+                cache_dir="models"
             )
-            storia_logger.info(f"Modelo carregado e pipeline inicializada na device: {self.device}")
+            
+            storia_logger.info("Configurando parâmetros para modelo fundido...")
+            self.llm = Llama(
+                model_path=self.model_path,
+                n_ctx=self.n_ctx,
+                n_threads=self.n_threads,
+                n_gpu_layers=0,
+                rope_freq_base=10000,
+                n_gqa=8, 
+                verbose=False
+            )
+            
+            storia_logger.info(f"Modelo carregado com sucesso! Contexto: {self.n_ctx} tokens")
+            
         except Exception as e:
-            storia_logger.error(f"Erro ao inicializar o modelo: {e}")
-            raise e  # Re-raise para que a aplicação saiba que houve falha
+            storia_logger.error(f"Falha ao carregar modelo: {str(e)}")
+            raise RuntimeError(f"Erro na inicialização do modelo: {e}")
 
-    def clean_text(self, text) -> str:
-        """
-        Remove espaços finais e converte para minúsculas.
-=======
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, set_seed
+    def clean_text(self, text: str) -> str:
+        """Remove espaços finais e normaliza texto"""
+        if not text:
+            return ""
+        return text.rstrip().lower()
 
-class Story_generator:
-    def __init__(self):
-        self.model_path = "Felipehonorato/storIA"
-        self.model = AutoModelForCausalLM.from_pretrained(self.model_path)
-        self.model = self.model.to('cpu')
-
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+    def format_text(self, text: str) -> str:
+        """Formatação do texto gerado"""
+        if not text:
+            return ""
+            
+        sentences = [s.strip().capitalize() for s in text.split('.') if s.strip()]
+        formatted = '. '.join(sentences)
         
-        set_seed(random.randint(0, 999))
+        if formatted and not formatted.endswith(('.', '!', '?')):
+            formatted += '.'
+            
+        return formatted
 
-    def clean_text(self, text) -> str:
-        """
-        Params: Input text
-        Returns: Treated input text (without spaces on the end, lower cased and with start token)
->>>>>>> development:app/story.py
-        """
-        restart = True
-
-        while restart:
-            if text[-1] != " ":
-                restart = False
-            else:
-                text = text[:-1]
-
-        text = text.lower()
-<<<<<<< HEAD:api-service/app/story.py
-        return text
-
-    def format_text(self, text) -> str:
-        """
-        Formata o texto com letras maiúsculas e espaçamento correto.
-=======
+    def generate_prompt(self, context: str = "", title: str = "") -> str:
+        """Constroi prompt otimizado para geração de histórias"""
+        prompt_parts = []
         
-        return text
-    
-    def format_text(self, text) -> str:
-        """
-        Params: Input text
-        Returns: Text formatted with capital letters and correct spacing
->>>>>>> development:app/story.py
-        """
-        text = ' '.join(text.split())
-        sentences = [sentence.strip().capitalize() for sentence in text.split('.')]
-        formatted_text = '. '.join(sentences)
-<<<<<<< HEAD:api-service/app/story.py
-=======
-        
->>>>>>> development:app/story.py
-        return formatted_text
+        if title:
+            prompt_parts.append(f"Título: {title.strip()}")
+            
+        if context:
+            prompt_parts.append(f"Contexto: {self.clean_text(context)}")
+            
+        prompt_parts.append("Gere uma história de terror completa:")
+        return "\n".join(prompt_parts)
 
-    def generate_story(self, text, size, temperature) -> str:
-        """
-<<<<<<< HEAD:api-service/app/story.py
-        Gera uma história com base no texto de entrada, tamanho e temperatura.
-        """
+    def generate_story(self, context:str="", title:str="", max_tokens:int=500, temperature:float=0.8) -> str:
+        """Gera história com ajustes para modelos fundidos"""
         try:
-            if text:
-                text = self.clean_text(text)
-
-            input_length = len(text.split())
-
-            storia_logger.debug(f"Gerando história com input_length={input_length}, size={size}, temperature={temperature}")
-
-            story = self.writer(
-                text,
-                max_length=input_length + size,
-                temperature=float(temperature),
-                repetition_penalty=1.2,
-                num_beams=5,
-                no_repeat_ngram_size=3,
-                truncation=True
-            )
-
-            story = story[0].get('generated_text')
-            story = self.format_text(story)
-
-            storia_logger.info("História gerada com sucesso")
-            return story
+            start_time = time.time()
+            prompt = self.generate_prompt(context, title)
+            
+            storia_logger.debug(f"Prompt: {prompt}")
+            
+            generation_params = {
+                "prompt": prompt,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": 0.9,
+                "repeat_penalty": 1.25,
+                "rope_freq_scale": 0.95,
+                "stop": ["\n\n", "###", "</s>"]
+            }
+            
+            output = self.llm.create_completion(**generation_params)
+            raw_text = output['choices'][0]['text']
+            
+            clean_text = self.format_text(raw_text)
+            elapsed = time.time() - start_time
+            
+            storia_logger.info(f"Geração concluída em {elapsed:.2f}s | Tokens: {len(output['usage']['completion_tokens'])}")
+            return clean_text
+            
         except Exception as e:
-            storia_logger.error(f"Erro ao gerar história: {e}")
-            raise e
-=======
-        Params: Input text, max size and temperature
-        Returns: generated story
-        """
-        if text != "":
-            text = self.clean_text(text)
+            storia_logger.error(f"Erro na geração: {str(e)}")
+            raise RuntimeError(f"Falha ao gerar história: {e}")
 
-        input_length = len(text.split())
-
-        writer = pipeline('text-generation', model=self.model, tokenizer=self.tokenizer)
-
-        story = writer(
-            text, max_length=input_length + size, 
-            temperature=float(temperature), 
-            repetition_penalty=float(1.2),
-            num_beams=5,
-            no_repeat_ngram_size=3,
-            truncation=True
+# Tira isso aqui depois
+if __name__ == "__main__":
+    try:
+        generator = StoryGenerator()
+        
+        # Exemplo de uso
+        story = generator.generate_story(
+            context="Uma casa abandonada com relógios parados na meia-noite",
+            title="O Sussurro nas Paredes",
+            max_tokens=350
         )
         
-        story = story[0].get('generated_text')
-        story = self.format_text(story)
-
-        return story
->>>>>>> development:app/story.py
+        print("\n" + "="*50)
+        print("HISTÓRIA GERADA:")
+        print("="*50)
+        print(story)
+        
+    except Exception as e:
+        print(f"\nERRO: {str(e)}")
+        storia_logger.critical(f"Falha crítica: {str(e)}")
