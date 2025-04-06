@@ -37,7 +37,8 @@ def init_routes(app):
 
         # Processamento dos parâmetros
         data = request.form
-        input_text = data.getlist('text[]')[0] if data.getlist('text[]') else None
+        context = data.getlist('text[]')[0] if data.getlist('text[]') else None
+        title = data.getlist('title[]')[0] if data.getlist('title[]') else None
         size = data.getlist('length[]')[0] if data.getlist('length[]') else 100
         temperature = data.getlist('temperature[]')[0] if data.getlist('temperature[]') else 1.0
 
@@ -49,11 +50,11 @@ def init_routes(app):
             storia_logger.error(f"Parâmetros inválidos: {e}")
             return jsonify({"error": f"Parâmetros inválidos: {e}"}), 400
 
-        if not input_text:
+        if not context:
             return jsonify({"error": "Texto inicial não fornecido"}), 400
 
         # Verificar cache – se achar o resultado, retorna imediatamente
-        cache_key = generate_cache_key(input_text, size, temperature)
+        cache_key = generate_cache_key(context, title, size, temperature)
         try:
             cached_story = redis_client.get(cache_key)
             if cached_story:
@@ -65,7 +66,7 @@ def init_routes(app):
         CACHE_MISSES.inc()
 
         # Enfileirar o job
-        job = q.enqueue(generate_story_job, input_text, size, temperature, job_timeout=600)
+        job = q.enqueue(generate_story_job, context, title, size, temperature, job_timeout=600)
         storia_logger.info(f"Requisição enfileirada com ID: {job.id}")
 
         # Retorna o job_id para que o front-end inicie o polling
