@@ -1,15 +1,25 @@
 apiService:
   image:
     tag: "staging"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    averageUtilization: 80
   env:
     - name: REDIS_HOST
       value: "redis"
     - name: APP_REDIS_PORT
       value: "6379"
+  environment: staging
 
 inference:
   image:
     tag: "staging"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    averageUtilization: 80
+  environment: staging
 
 worker:
   image:

@@ -1,32 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: staging-ingress
+  name: production-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - staging.127.0.0.1.nip.io
-      secretName: staging-tls-secret
   rules:
-    - host: staging.127.0.0.1.nip.io
-      http:
+    - http:
         paths:
           - path: /generate
             pathType: Prefix
             backend:
               service:
-                name: storia-staging-inference-svc
+                name: storia-staging-inference-svc # colocar o nome do svc, kubectl get svc
                 port:
                   number: 6000
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: storia-staging-api-svc
+                name: storia-staging-api-svc 
                 port:
                   number: 8080

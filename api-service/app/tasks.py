@@ -3,7 +3,7 @@ import requests
 from app.logger import storia_logger
 
 def generate_story_job(input_text: str, size: int, temperature: float) -> str:
-    inference_url = os.environ.get("INFERENCE_URL", "http://storia-staging-inference-svc:6000/generate")
+    inference_url = os.environ.get("INFERENCE_URL", "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/generate")
     payload = {
         "text": input_text,
         "size": size,

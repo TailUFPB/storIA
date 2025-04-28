@@ -21,7 +21,7 @@ spec:
 
       containers:
       - name: worker
-        image: api-service:latest
+        image: tailmlops/api-service:v2
         imagePullPolicy: Always
         command: ["python", "-m", "app.worker"]
         resources:
@@ -33,9 +33,9 @@ spec:
             cpu: "1"
         volumeMounts:
           - name: storia-logs
-            mountPath: /var/log/storIA
+            mountPath: /var/log/storia
       volumes:
         - name: storia-logs
           hostPath:
-            path: /var/log/storIA
+            path: /var/log/storia
             type: DirectoryOrCreate

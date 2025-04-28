@@ -7,6 +7,7 @@ serviceAccount:
 apiService:
   name: "api-service"
   replicaCount: 1
+  environment: production  # Default para produção
   containerPort: 5000
   image:
     repository: "tailmlops/api-service"
@@ -45,10 +46,11 @@ apiService:
   hpa:
     minReplicas: 1
     maxReplicas: 5
-    averageUtilization: 70
+    averageUtilization: 80
 
 inference:
   replicaCount: 1
+  environment: production  # Default para produção
   containerPort: 6000
   image:
     repository: "tailmlops/api-service"
@@ -63,7 +65,7 @@ inference:
       memory: "1Gi"
       cpu: "500m"
     limits:
-      memory: "3Gi"
+      memory: "2Gi"
       cpu: "1"
   volume:
     mountPath: "/var/log/storia"
@@ -72,7 +74,7 @@ inference:
   hpa:
     minReplicas: 1
     maxReplicas: 5
-    averageUtilization: 100
+    averageUtilization: 80
   service:
     port: 6000
     type: "ClusterIP"

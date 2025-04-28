@@ -17,3 +17,6 @@ spec:
         target:
           type: Utilization
           averageUtilization: {{ .Values.apiService.hpa.averageUtilization }}
+  selector:
+    matchLabels:
+      env: {{ .Values.apiService.environment | default "production" }}  # Selector de env

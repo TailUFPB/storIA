@@ -5,15 +5,18 @@ metadata:
   name: {{ include "storia.fullname" . }}-inference
   labels:
     app: inference
+    env: {{ .Values.inference.environment | default "production" }}  # Adicionando a label para o ambiente
 spec:
   replicas: {{ .Values.inference.replicaCount }}
   selector:
     matchLabels:
       app: inference
+      env: {{ .Values.inference.environment | default "production" }}  # Selector para o ambiente
   template:
     metadata:
       labels:
         app: inference
+        env: {{ .Values.inference.environment | default "production" }}  # Label do pod
     spec:
       containers:
       - name: inference

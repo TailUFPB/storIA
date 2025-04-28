@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: localhost-tls
+  namespace: default
+spec:
+  secretName: localhost-tls
+  issuerRef:
+    name: letsencrypt-staging  
+  commonName: localhost
+  dnsNames:
+    - staging.127.0.0.1.nip.io
+  duration: 8760h  # 1 ano
+  renewBefore: 360h  # 15 dias antes de expirar

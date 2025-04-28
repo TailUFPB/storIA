@@ -17,3 +17,6 @@ spec:
         target:
           type: Utilization
           averageUtilization: {{ .Values.inference.hpa.averageUtilization }}
+  selector:
+    matchLabels:
+      env: {{ .Values.inference.environment | default "production" }}  # Selector para o ambiente

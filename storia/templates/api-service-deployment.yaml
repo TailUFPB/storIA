@@ -5,15 +5,18 @@ metadata:
   name: {{ include "storia.fullname" . }}-api
   labels:
     app: {{ .Values.apiService.name | default "api-service" }}
+    env: {{ .Values.apiService.environment | default "production" }}  # Label dinâmica para o ambiente
 spec:
   replicas: {{ .Values.apiService.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Values.apiService.name | default "api-service" }}
+      env: {{ .Values.apiService.environment | default "production" }}  # Selector de env
   template:
     metadata:
       labels:
         app: {{ .Values.apiService.name | default "api-service" }}
+        env: {{ .Values.apiService.environment | default "production" }}  # Label de env
     spec:
       containers:
         - name: api

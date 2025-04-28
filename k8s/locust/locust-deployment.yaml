@@ -29,7 +29,7 @@ spec:
           args:
             - "-f"
             - "/locust/locustfile.py"
-            - "--host=http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
+            - "--host=http://ingress-nginx-controller.ingress-nginx.svc.cluster.local" 
           volumeMounts:
             - name: locust-scripts
               mountPath: /locust

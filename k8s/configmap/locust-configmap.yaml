@@ -8,6 +8,12 @@ data:
     import time
     import random
     import json
+    import logging
+
+    # Configuração básica de logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
     # Lista de prompts para os testes
     PROMPTS = [
         "A shadow lurking in the basement",
@@ -18,50 +24,79 @@ data:
     ]
 
     class ApiUser(HttpUser):
-        wait_time = between(10, 10)  # Tempo entre uma nova requisição após o termino da atual
-        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"  # Passa pelo Nginx
+        wait_time = between(10, 10)  # Tempo entre uma nova requisição após o término da atual
+        host = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"   # Ingress Controller
+
 
         @task
         def generate_story(self):
             prompt = random.choice(PROMPTS)
+            
+            # Logando o prompt escolhido
+            logger.info(f"Escolhendo prompt: {prompt}")
+
             # Envia os dados como formulário, conforme esperado pela rota /submit
             form_data = {
                 "text[]": prompt,
                 "length[]": "50",         # Lembrando que o views.py converte para int
-                "temperature[]": "1.0"       # e para float, respectivamente
+                "temperature[]": "1.0"    # e para float, respectivamente
             }
             headers = {"Content-Type": "application/x-www-form-urlencoded"}
-            
-            with self.client.post("/submit", data=form_data, headers=headers, timeout=600, catch_response=True) as response:
+
+            logger.info("Enviando requisição POST para /submit com os dados")
+
+            # Realiza o POST
+            with self.client.post("/submit", data=form_data, headers=headers, timeout=600, catch_response=True, verify=False) as response:
+                logger.info(f"Status code da resposta: {response.status_code}")
+
                 if response.status_code == 200:
                     try:
                         res_data = response.json()
+                        logger.info(f"Resposta JSON recebida: {res_data}")
                     except Exception as e:
+                        logger.error(f"Erro ao interpretar resposta JSON: {e}")
                         response.failure(f"Erro ao interpretar resposta JSON: {e}")
                         return
+
                     # Se o job já estiver finalizado, não precisa de polling
                     if res_data.get("job_finished", False):
+                        logger.info("Job finalizado, marcando como sucesso.")
                         response.success()
                         return
 
                     # Caso contrário, obtemos o job_id e fazemos polling na rota /result/<job_id>
                     job_id = res_data.get("job_id")
                     if not job_id:
+                        logger.error("Job ID não retornado")
                         response.failure("Job ID não retornado")
                         return
 
+                    logger.info(f"Iniciando polling para job_id: {job_id}")
+
                     # Polling simples com limite de tentativas
-                    for _ in range(5): # Quantidade de verificações pra uma resposta
+                    for _ in range(5):  # Quantidade de verificações para uma resposta
+                        logger.info(f"Realizando polling para {job_id}, tentativa {_ + 1}")
+
                         poll_response = self.client.get(f"/result/{job_id}", timeout=180)
                         try:
                             poll_data = poll_response.json()
+                            logger.info(f"Resposta do polling: {poll_data}")
                         except Exception as e:
+                            logger.error(f"Erro ao interpretar polling JSON: {e}")
                             response.failure(f"Erro ao interpretar polling JSON: {e}")
                             return
+
                         if poll_data.get("status") == "finished":
+                            logger.info(f"Job {job_id} finalizado com sucesso.")
                             response.success()
                             return
-                        time.sleep(60) # Tempo de espera entre as verificações
+
+                        # Tempo de espera entre as verificações
+                        logger.info(f"Esperando 60 segundos para a próxima verificação do job {job_id}")
+                        time.sleep(60) 
+
+                    logger.error(f"Job {job_id} não finalizado dentro do tempo de polling.")
                     response.failure("Job não finalizado dentro do tempo de polling")
                 else:
+                    logger.error(f"Erro HTTP: {response.status_code}")
                     response.failure(f"Erro HTTP {response.status_code}")
